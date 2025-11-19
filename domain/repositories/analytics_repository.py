@@ -1,0 +1,13 @@
+from abc import ABC, abstractmethod
+from src.domain.entities.analytics import StudentFeatures, RiskPrediction, TrainingStatus
+
+class AnalyticsRepository(ABC):
+    @abstractmethod
+    def predict(self, student: StudentFeatures) -> RiskPrediction:
+        """To predict the risk level of a student."""
+        pass
+
+    @abstractmethod
+    def train_model(self) -> TrainingStatus:
+        """To train the model."""
+        pass
