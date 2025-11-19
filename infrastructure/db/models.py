@@ -35,16 +35,3 @@ class GradeModel(Base):
 
     student = relationship("StudentModel", backref="grades")
     subject = relationship("SubjectModel", backref="grades")
-
-class AttendanceModel(Base):
-    __tablename__ = "attendances"
-    
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    student_id = Column(String, ForeignKey("students.id"), nullable=False)
-    subject_id = Column(String, ForeignKey("subjects.id"), nullable=False)
-    professor_id = Column(String, ForeignKey("professors.id"), nullable=True)  # Nuevo
-    date = Column(DateTime, nullable=False)
-    status = Column(String, nullable=False)  # "present", "absent", "late", "excused"
-    notes = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
