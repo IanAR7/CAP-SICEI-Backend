@@ -1,12 +1,15 @@
-import pytest
 from unittest.mock import Mock
-from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from domain.exceptions.cannot_delete_resource_exception import CannotDeleteResourceException
+
+import pytest
+
 from application.use_cases.grades.delete_grade import DeleteGradeUseCase
+from domain.exceptions.cannot_delete_resource_exception import (
+    CannotDeleteResourceException,
+)
+from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
 
 
 class TestDeleteGradeUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()

@@ -1,12 +1,13 @@
-import pytest
 from unittest.mock import Mock, patch
+
+import pytest
+
 from application.use_cases.students.create_student import CreateStudentUseCase
 from domain.entities.student import Student
 from domain.exceptions.cannot_create_exception import CannotCreateException
 
 
 class TestCreateStudentUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()
@@ -23,7 +24,7 @@ class TestCreateStudentUseCase:
             lastname="Doe",
             email="john.doe@example.com",
             semester=5,
-            average=8.5
+            average=8.5,
         )
 
     def test_successful_student_creation(self, use_case, mock_repository, sample_student_data):
@@ -33,12 +34,12 @@ class TestCreateStudentUseCase:
             lastname="Doe",
             email="john.doe@example.com",
             semester=5,
-            average=8.5
+            average=8.5,
         )
         mock_repository.exists.return_value = False
         mock_repository.create.return_value = expected_student
 
-        with patch('random.randint', return_value=1):
+        with patch("random.randint", return_value=1):
             result = use_case.execute(sample_student_data)
 
         assert result.id == "A25000001"
@@ -53,7 +54,7 @@ class TestCreateStudentUseCase:
     def test_id_generation_format(self, use_case, mock_repository):
         mock_repository.exists.return_value = False
 
-        with patch('random.randint', return_value=1234):
+        with patch("random.randint", return_value=1234):
             generated_id = use_case.generate_student_id(year=2025)
 
         assert generated_id == "A25001234"
@@ -63,7 +64,7 @@ class TestCreateStudentUseCase:
     def test_id_generation_with_different_year(self, use_case, mock_repository):
         mock_repository.exists.return_value = False
 
-        with patch('random.randint', return_value=5678):
+        with patch("random.randint", return_value=5678):
             generated_id = use_case.generate_student_id(year=2024)
 
         assert generated_id == "A24005678"
@@ -72,7 +73,7 @@ class TestCreateStudentUseCase:
     def test_id_generation_with_leading_zeros(self, use_case, mock_repository):
         mock_repository.exists.return_value = False
 
-        with patch('random.randint', return_value=42):
+        with patch("random.randint", return_value=42):
             generated_id = use_case.generate_student_id(year=2025)
 
         assert generated_id == "A25000042"
@@ -81,7 +82,7 @@ class TestCreateStudentUseCase:
     def test_id_collision_handling_multiple_retries(self, use_case, mock_repository):
         mock_repository.exists.side_effect = [True, True, True, False]
 
-        with patch('random.randint', side_effect=[1000, 1001, 1002, 1003]):
+        with patch("random.randint", side_effect=[1000, 1001, 1002, 1003]):
             generated_id = use_case.generate_student_id(year=2025)
 
         assert generated_id == "A25001003"
@@ -92,7 +93,7 @@ class TestCreateStudentUseCase:
         mock_repository.create.return_value = None
 
         with pytest.raises(CannotCreateException) as exc_info:
-            with patch('random.randint', return_value=1234):
+            with patch("random.randint", return_value=1234):
                 use_case.execute(sample_student_data)
 
         assert str(exc_info.value) == "Cannot create student"
@@ -106,12 +107,12 @@ class TestCreateStudentUseCase:
             lastname="Doe",
             email="john.doe@example.com",
             semester=5,
-            average=8.5
+            average=8.5,
         )
         mock_repository.create.return_value = created_student
 
         # Act
-        with patch('random.randint', return_value=9999):
+        with patch("random.randint", return_value=9999):
             use_case.execute(sample_student_data)
 
         # Assert

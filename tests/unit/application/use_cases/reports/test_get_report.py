@@ -1,14 +1,14 @@
-import pytest
 from unittest.mock import Mock
 
+import pytest
+
+from application.use_cases.reports.get_report import GetReportUseCase
 from domain.entities.grade import GradeToShowStudent, GradeToShowSubject
 from domain.entities.student import Student, StudentReportDashboard
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from application.use_cases.reports.get_report import GetReportUseCase
 
 
 class TestGetReportUseCase:
-
     @pytest.fixture
     def mock_grade_repository(self):
         return Mock()
@@ -21,7 +21,7 @@ class TestGetReportUseCase:
     def use_case(self, mock_grade_repository, mock_student_repository):
         return GetReportUseCase(
             grade_repository=mock_grade_repository,
-            student_repository=mock_student_repository
+            student_repository=mock_student_repository,
         )
 
     # ========== Tests for execute_by_student_id ==========
@@ -30,7 +30,7 @@ class TestGetReportUseCase:
         student_id = "S001"
         expected_grades = [
             GradeToShowStudent(id=1, subject="Matemáticas", value=85.0),
-            GradeToShowStudent(id=2, subject="Física", value=90.0)
+            GradeToShowStudent(id=2, subject="Física", value=90.0),
         ]
         expected_average = 87.5
 
@@ -83,7 +83,7 @@ class TestGetReportUseCase:
         expected_grades = [
             GradeToShowSubject(id=1, student="Juan Pérez", value=80.0),
             GradeToShowSubject(id=2, student="María García", value=90.0),
-            GradeToShowSubject(id=3, student="Pedro López", value=85.0)
+            GradeToShowSubject(id=3, student="Pedro López", value=85.0),
         ]
         expected_average = 85.0
 
@@ -117,19 +117,28 @@ class TestGetReportUseCase:
 
     def test_execute_all_students_dashboard_success(self, use_case, mock_student_repository, mock_grade_repository):
         students = [
-            Student(id="S001", name="Juan", lastname="Pérez", email="juan@test.com", semester=5, average=85.0),
-            Student(id="S002", name="María", lastname="García", email="maria@test.com", semester=5, average=90.0)
+            Student(
+                id="S001",
+                name="Juan",
+                lastname="Pérez",
+                email="juan@test.com",
+                semester=5,
+                average=85.0,
+            ),
+            Student(
+                id="S002",
+                name="María",
+                lastname="García",
+                email="maria@test.com",
+                semester=5,
+                average=90.0,
+            ),
         ]
 
         mock_student_repository.get_all.return_value = students
         mock_grade_repository.is_regular_student.side_effect = [True, False]
 
-        result = use_case.execute_all_students_dashboard(
-            page_size=25,
-            page=1,
-            sort_field="name",
-            sort_order="asc"
-        )
+        result = use_case.execute_all_students_dashboard(page_size=25, page=1, sort_field="name", sort_order="asc")
 
         assert len(result) == 2
         assert isinstance(result[0], StudentReportDashboard)
@@ -139,21 +148,13 @@ class TestGetReportUseCase:
         assert result[1].id == "S002"
         assert result[1].status is False
 
-        mock_student_repository.get_all.assert_called_once_with(
-            page_size=25,
-            page=1,
-            sort_field="name",
-            sort_order="asc"
-        )
+        mock_student_repository.get_all.assert_called_once_with(page_size=25, page=1, sort_field="name", sort_order="asc")
         assert mock_grade_repository.is_regular_student.call_count == 2
 
     def test_execute_all_students_dashboard_empty_list(self, use_case, mock_student_repository):
         mock_student_repository.get_all.return_value = []
 
-        result = use_case.execute_all_students_dashboard(
-            page_size=25,
-            page=1
-        )
+        result = use_case.execute_all_students_dashboard(page_size=25, page=1)
 
         assert result == []
         assert isinstance(result, list)

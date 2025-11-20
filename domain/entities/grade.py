@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from typing import List
 
 @dataclass
 class Grade:
@@ -9,11 +8,13 @@ class Grade:
     subject_id: str
     value: float
 
+
 @dataclass
 class GradeToShowStudent:
     id: int
     subject: str
     value: float
+
 
 @dataclass
 class GradeToShowSubject:

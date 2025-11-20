@@ -65,3 +65,27 @@ Use the following command to turn off the container
 ```
 docker compose down
 ```
+
+## For Developers:
+
+If you plan to contribute, test, or modify the code, install the development tools:
+```
+pip install -r requirements-dev.txt
+```
+
+Development Workflow
+We use Ruff for linting/formatting and Pytest for testing. We also enforce code quality using Pre-commit hooks.
+
+1. Setup Pre-commit
+Once dependencies are installed, initialize the pre-commit hooks. This ensures code is checked automatically before every commit.
+
+pre-commit install
+
+2. Useful Commands
+
+| Action | Command | Description |
+| :--- | :--- | :--- |
+| **Run Tests** | `pytest` | Runs all unit tests and generates a coverage report. |
+| **Format Code** | `ruff format .` | Automatically formats code to match the project style. |
+| **Lint & Fix** | `ruff check --fix .` | Checks for errors and fixes imports/variables automatically. |
+| **Validate All** | `pre-commit run --all-files` | Runs all checks (lint, format, types) on all files manually. |

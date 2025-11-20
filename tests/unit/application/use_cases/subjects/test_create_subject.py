@@ -1,14 +1,14 @@
-import pytest
-from unittest.mock import Mock, patch
 import uuid
+from unittest.mock import Mock, patch
 
+import pytest
+
+from application.use_cases.subjects.create_subject import CreateSubjectUseCase
 from domain.entities.subject import Subject
 from domain.exceptions.cannot_create_exception import CannotCreateException
-from application.use_cases.subjects.create_subject import CreateSubjectUseCase
 
 
 class TestCreateSubjectUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()
@@ -24,7 +24,7 @@ class TestCreateSubjectUseCase:
             name="Matemáticas",
             description="Cálculo diferencial",
             credits=4,
-            semester=5
+            semester=5,
         )
 
     # ========== Tests for execute ==========
@@ -36,12 +36,12 @@ class TestCreateSubjectUseCase:
             name="Matemáticas",
             description="Cálculo diferencial",
             credits=4,
-            semester=5
+            semester=5,
         )
         mock_repository.exists.return_value = False
         mock_repository.create.return_value = created_subject
 
-        with patch('uuid.uuid4', return_value=uuid.UUID(generated_uuid)):
+        with patch("uuid.uuid4", return_value=uuid.UUID(generated_uuid)):
             result = use_case.execute(sample_subject_data)
 
         assert result == created_subject
@@ -58,7 +58,7 @@ class TestCreateSubjectUseCase:
         mock_repository.exists.return_value = False
         mock_repository.create.return_value = None
 
-        with patch('uuid.uuid4', return_value=uuid.UUID(generated_uuid)):
+        with patch("uuid.uuid4", return_value=uuid.UUID(generated_uuid)):
             with pytest.raises(CannotCreateException) as exc_info:
                 use_case.execute(sample_subject_data)
 
@@ -72,12 +72,12 @@ class TestCreateSubjectUseCase:
             name="Matemáticas",
             description="Cálculo diferencial",
             credits=4,
-            semester=5
+            semester=5,
         )
         mock_repository.exists.return_value = False
         mock_repository.create.return_value = created_subject
 
-        with patch('uuid.uuid4', return_value=uuid.UUID(generated_uuid)):
+        with patch("uuid.uuid4", return_value=uuid.UUID(generated_uuid)):
             use_case.execute(sample_subject_data)
 
         call_args = mock_repository.create.call_args[0][0]
@@ -89,9 +89,12 @@ class TestCreateSubjectUseCase:
     def test_generate_subject_id_collision_single_retry(self, use_case, mock_repository):
         first_uuid = "11111111-1111-1111-1111-111111111111"
         second_uuid = "22222222-2222-2222-2222-222222222222"
-        mock_repository.exists.side_effect = [True, False] # First exists, second does not
+        mock_repository.exists.side_effect = [
+            True,
+            False,
+        ]  # First exists, second does not
 
-        with patch('uuid.uuid4', side_effect=[uuid.UUID(first_uuid), uuid.UUID(second_uuid)]):
+        with patch("uuid.uuid4", side_effect=[uuid.UUID(first_uuid), uuid.UUID(second_uuid)]):
             generated_id = use_case.generate_subject_id()
 
         assert generated_id == second_uuid
@@ -104,7 +107,7 @@ class TestCreateSubjectUseCase:
         second_uuid = "98765432-9876-9876-9876-987654321098"
         mock_repository.exists.side_effect = [True, False]
 
-        with patch('uuid.uuid4', side_effect=[uuid.UUID(first_uuid), uuid.UUID(second_uuid)]):
+        with patch("uuid.uuid4", side_effect=[uuid.UUID(first_uuid), uuid.UUID(second_uuid)]):
             result = use_case.generate_subject_id()
 
         assert result == second_uuid

@@ -1,12 +1,13 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from application.use_cases.students.get_student import GetStudentUseCase
 from domain.entities.student import Student
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
 
 
 class TestGetStudentUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()
@@ -23,7 +24,7 @@ class TestGetStudentUseCase:
             lastname="Doe",
             email="john.doe@example.com",
             semester=5,
-            average=8.5
+            average=8.5,
         )
 
     @pytest.fixture
@@ -35,7 +36,7 @@ class TestGetStudentUseCase:
                 lastname="Doe",
                 email="john.doe@example.com",
                 semester=5,
-                average=8.5
+                average=8.5,
             ),
             Student(
                 id="A25000002",
@@ -43,8 +44,8 @@ class TestGetStudentUseCase:
                 lastname="Smith",
                 email="jane.smith@example.com",
                 semester=5,
-                average=9.0
-            )
+                average=9.0,
+            ),
         ]
 
     def test_execute_by_id_success(self, use_case, mock_repository, sample_student):
@@ -104,7 +105,6 @@ class TestGetStudentUseCase:
             use_case.execute_by_semester(semester)
 
         mock_repository.get_by_semester.assert_called_once_with(semester)
-
 
     def test_execute_by_semester_with_none_return(self, use_case, mock_repository):
         semester = 5

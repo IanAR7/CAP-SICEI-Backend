@@ -1,6 +1,7 @@
 import pytest
-from domain.services.grade_service import GradeService
+
 from domain.entities.grade import Grade
+from domain.services.grade_service import GradeService
 
 
 class TestGradeService:
@@ -12,7 +13,7 @@ class TestGradeService:
         grades = [
             Grade(id=1, student_id="S001", subject_id="SUB001", value=80.0),
             Grade(id=2, student_id="S001", subject_id="SUB002", value=90.0),
-            Grade(id=3, student_id="S001", subject_id="SUB003", value=85.0)
+            Grade(id=3, student_id="S001", subject_id="SUB003", value=85.0),
         ]
 
         result = service.calculate_average(grades)

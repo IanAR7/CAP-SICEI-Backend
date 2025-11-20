@@ -1,13 +1,13 @@
-import pytest
 from unittest.mock import Mock
 
+import pytest
+
+from application.use_cases.subjects.get_subject import GetSubjectUseCase
 from domain.entities.subject import Subject
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from application.use_cases.subjects.get_subject import GetSubjectUseCase
 
 
 class TestGetSubjectUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()
@@ -23,7 +23,7 @@ class TestGetSubjectUseCase:
             name="Matemáticas",
             description="Cálculo diferencial",
             credits=4,
-            semester=5
+            semester=5,
         )
 
     @pytest.fixture
@@ -34,15 +34,15 @@ class TestGetSubjectUseCase:
                 name="Matemáticas",
                 description="Cálculo diferencial",
                 credits=4,
-                semester=5
+                semester=5,
             ),
             Subject(
                 id="FIS101",
                 name="Física",
                 description="Mecánica clásica",
                 credits=4,
-                semester=5
-            )
+                semester=5,
+            ),
         ]
 
     # ========== Tests for execute_by_id ==========
@@ -127,12 +127,7 @@ class TestGetSubjectUseCase:
 
         assert result == sample_subjects_list
         assert len(result) == 2
-        mock_repository.get_all.assert_called_once_with(
-            page_size=page_size,
-            page=page,
-            sort_field=None,
-            sort_order=None
-        )
+        mock_repository.get_all.assert_called_once_with(page_size=page_size, page=page, sort_field=None, sort_order=None)
 
     def test_execute_all_with_different_page_sizes(self, use_case, mock_repository, sample_subjects_list):
         page_size = 5
@@ -142,12 +137,7 @@ class TestGetSubjectUseCase:
         result = use_case.execute_all(page_size=page_size, page=page)
 
         assert result == sample_subjects_list
-        mock_repository.get_all.assert_called_once_with(
-            page_size=page_size,
-            page=page,
-            sort_field=None,
-            sort_order=None
-        )
+        mock_repository.get_all.assert_called_once_with(page_size=page_size, page=page, sort_field=None, sort_order=None)
 
     def test_execute_all_with_descending_order(self, use_case, mock_repository, sample_subjects_list):
         page_size = 10
@@ -157,18 +147,8 @@ class TestGetSubjectUseCase:
         mock_repository.get_all.return_value = sample_subjects_list
 
         # Act
-        result = use_case.execute_all(
-            page_size=page_size,
-            page=page,
-            sort_field=sort_field,
-            sort_order=sort_order
-        )
+        result = use_case.execute_all(page_size=page_size, page=page, sort_field=sort_field, sort_order=sort_order)
 
         # Assert
         assert result == sample_subjects_list
-        mock_repository.get_all.assert_called_once_with(
-            page_size=page_size,
-            page=page,
-            sort_field=sort_field,
-            sort_order=sort_order
-        )
+        mock_repository.get_all.assert_called_once_with(page_size=page_size, page=page, sort_field=sort_field, sort_order=sort_order)

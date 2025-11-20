@@ -1,13 +1,16 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from application.use_cases.subjects.update_subject import UpdateSubjectUseCase
 from domain.entities.subject import Subject
+from domain.exceptions.cannot_update_resource_exception import (
+    CannotUpdateResourceException,
+)
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from domain.exceptions.cannot_update_resource_exception import CannotUpdateResourceException
 
 
 class TestUpdateSubjectUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()
@@ -23,7 +26,7 @@ class TestUpdateSubjectUseCase:
             name="Matemáticas Avanzadas",
             description="Cálculo diferencial e integral",
             credits=4,
-            semester=5
+            semester=5,
         )
 
     def test_execute_success(self, use_case, mock_repository, sample_subject_data):
@@ -32,7 +35,7 @@ class TestUpdateSubjectUseCase:
             name="Matemáticas Avanzadas",
             description="Cálculo diferencial e integral actualizado",
             credits=5,
-            semester=6
+            semester=6,
         )
         mock_repository.exists.return_value = True
         mock_repository.update.return_value = updated_subject
@@ -76,14 +79,14 @@ class TestUpdateSubjectUseCase:
                 name="Test Subject",
                 description="Test Description",
                 credits=4,
-                semester=5
+                semester=5,
             )
             updated_subject = Subject(
                 id=subject_id,
                 name="Test Subject Updated",
                 description="Test Description",
                 credits=4,
-                semester=5
+                semester=5,
             )
             mock_repository.exists.return_value = True
             mock_repository.update.return_value = updated_subject

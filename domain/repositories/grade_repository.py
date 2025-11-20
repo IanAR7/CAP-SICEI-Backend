@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-
 from typing import List, Optional
 
 from domain.entities.grade import Grade, GradeToShowStudent, GradeToShowSubject
+
 
 class GradeRepository(ABC):
     @abstractmethod
@@ -13,7 +13,7 @@ class GradeRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, grade_id: int) -> Grade:
+    def get_by_id(self, grade_id: int) -> Grade | None:
         """
         To get a grade by its ID from the repository.
         """
@@ -25,7 +25,7 @@ class GradeRepository(ABC):
         page_size: int,
         page: int,
         sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None
+        sort_order: Optional[str] = None,
     ) -> List[Grade]:
         """
         To get all grades from the repository.
@@ -33,7 +33,7 @@ class GradeRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, grade: Grade) -> Grade:
+    def update(self, grade: Grade) -> Grade | None:
         """
         To update an existing grade in the repository.
         """
@@ -47,7 +47,7 @@ class GradeRepository(ABC):
         pass
 
     @abstractmethod
-    def exists(self, grade_id: int) -> bool:
+    def exists(self, grade_id: int | None) -> bool:
         """
         To check if a grade exists in the repository.
         """
@@ -82,7 +82,7 @@ class GradeRepository(ABC):
         pass
 
     @abstractmethod
-    def is_regular_student(self, student_id: str) -> bool:
+    def is_regular_student(self, student_id: str | None) -> bool:
         """
         To check if a student is regular based on their grades.
         """

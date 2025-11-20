@@ -1,12 +1,15 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from application.use_cases.subjects.delete_subject import DeleteSubjectUseCase
+from domain.exceptions.cannot_delete_resource_exception import (
+    CannotDeleteResourceException,
+)
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from domain.exceptions.cannot_delete_resource_exception import CannotDeleteResourceException
 
 
 class TestDeleteSubjectUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()

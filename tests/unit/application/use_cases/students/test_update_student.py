@@ -1,13 +1,16 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from application.use_cases.students.update_student import UpdateStudentUseCase
 from domain.entities.student import Student
+from domain.exceptions.cannot_update_resource_exception import (
+    CannotUpdateResourceException,
+)
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from domain.exceptions.cannot_update_resource_exception import CannotUpdateResourceException
 
 
 class TestUpdateStudentUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()
@@ -24,7 +27,7 @@ class TestUpdateStudentUseCase:
             lastname="Pérez",
             email="juan.perez@example.com",
             semester=5,
-            average=85.0
+            average=85.0,
         )
 
     # ========== Tests para execute ==========
@@ -36,7 +39,7 @@ class TestUpdateStudentUseCase:
             lastname="Pérez García",
             email="juan.perez@example.com",
             semester=6,
-            average=87.5
+            average=87.5,
         )
         mock_repository.exists.return_value = True
         mock_repository.update.return_value = updated_student
@@ -77,7 +80,7 @@ class TestUpdateStudentUseCase:
             lastname="Pérez",
             email="nuevo.email@example.com",
             semester=5,
-            average=85.0
+            average=85.0,
         )
         updated_student = Student(
             id="S001",
@@ -85,7 +88,7 @@ class TestUpdateStudentUseCase:
             lastname="Pérez",
             email="nuevo.email@example.com",
             semester=5,
-            average=85.0
+            average=85.0,
         )
         mock_repository.exists.return_value = True
         mock_repository.update.return_value = updated_student

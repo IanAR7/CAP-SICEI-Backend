@@ -1,11 +1,15 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from application.use_cases.students.delete_student import DeleteStudentUseCase
+from domain.exceptions.cannot_delete_resource_exception import (
+    CannotDeleteResourceException,
+)
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from domain.exceptions.cannot_delete_resource_exception import CannotDeleteResourceException
+
 
 class TestDeleteStudentUseCase:
-
     @pytest.fixture
     def mock_repository(self):
         return Mock()
@@ -24,9 +28,7 @@ class TestDeleteStudentUseCase:
         mock_repository.exists.assert_called_once_with(student_id)
         mock_repository.delete.assert_called_once_with(student_id)
 
-    def test_execute_raises_resource_not_found_exception_when_student_does_not_exist(
-        self, use_case, mock_repository
-    ):
+    def test_execute_raises_resource_not_found_exception_when_student_does_not_exist(self, use_case, mock_repository):
         student_id = "nonexistent-student"
         mock_repository.exists.return_value = False
 
@@ -37,9 +39,7 @@ class TestDeleteStudentUseCase:
         mock_repository.exists.assert_called_once_with(student_id)
         mock_repository.delete.assert_not_called()
 
-    def test_execute_raises_cannot_delete_resource_exception_when_deletion_fails(
-        self, use_case, mock_repository
-    ):
+    def test_execute_raises_cannot_delete_resource_exception_when_deletion_fails(self, use_case, mock_repository):
         student_id = "A25009999"
         mock_repository.exists.return_value = True
         mock_repository.delete.return_value = False

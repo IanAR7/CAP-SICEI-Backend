@@ -1,13 +1,14 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-
 import uuid
+
+from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
+
 class StudentModel(Base):
-    __tablename__ = 'students'
+    __tablename__ = "students"
 
     id = Column(String, primary_key=True)
     name = Column(String, nullable=False)
@@ -16,8 +17,9 @@ class StudentModel(Base):
     semester = Column(Integer, nullable=False)
     average = Column(Float, nullable=False, default=0.0)
 
+
 class SubjectModel(Base):
-    __tablename__ = 'subjects'
+    __tablename__ = "subjects"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String, nullable=False)
@@ -25,8 +27,9 @@ class SubjectModel(Base):
     credits = Column(Integer, nullable=False)
     semester = Column(Integer, nullable=False)
 
+
 class GradeModel(Base):
-    __tablename__ = 'grades'
+    __tablename__ = "grades"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     student_id = Column(String, ForeignKey("students.id"), nullable=False)

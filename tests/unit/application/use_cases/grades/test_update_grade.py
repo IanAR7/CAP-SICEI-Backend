@@ -1,14 +1,17 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from application.use_cases.grades.update_grade import UpdateGradeUseCase
 from domain.entities.grade import Grade
 from domain.entities.student import Student
+from domain.exceptions.cannot_update_resource_exception import (
+    CannotUpdateResourceException,
+)
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from domain.exceptions.cannot_update_resource_exception import CannotUpdateResourceException
 
 
 class TestUpdateGradeUseCase:
-
     @pytest.fixture
     def mock_grade_repository(self):
         return Mock()
@@ -26,17 +29,12 @@ class TestUpdateGradeUseCase:
         return UpdateGradeUseCase(
             grade_repository=mock_grade_repository,
             student_repository=mock_student_repository,
-            grade_service=mock_grade_service
+            grade_service=mock_grade_service,
         )
 
     @pytest.fixture
     def sample_grade_data(self):
-        return Grade(
-            id=1,
-            student_id="S12345",
-            subject_id="MATH101",
-            value=85.5
-        )
+        return Grade(id=1, student_id="S12345", subject_id="MATH101", value=85.5)
 
     @pytest.fixture
     def sample_student(self):
@@ -46,7 +44,7 @@ class TestUpdateGradeUseCase:
             lastname="Doe",
             email="john.doe@example.com",
             semester=3,
-            average=80.0
+            average=80.0,
         )
 
     def test_execute_success(
@@ -56,14 +54,9 @@ class TestUpdateGradeUseCase:
         mock_student_repository,
         mock_grade_service,
         sample_grade_data,
-        sample_student
+        sample_student,
     ):
-        updated_grade = Grade(
-            id=1,
-            student_id="S12345",
-            subject_id="MATH101",
-            value=85.5
-        )
+        updated_grade = Grade(id=1, student_id="S12345", subject_id="MATH101", value=85.5)
 
         all_student_grades = [
             Grade(id=1, student_id="S12345", subject_id="MATH101", value=85.5),
@@ -93,12 +86,7 @@ class TestUpdateGradeUseCase:
         updated_student_call = mock_student_repository.update.call_args[0][0]
         assert updated_student_call.average == new_average
 
-    def test_execute_grade_not_found(
-        self,
-        use_case,
-        mock_grade_repository,
-        sample_grade_data
-    ):
+    def test_execute_grade_not_found(self, use_case, mock_grade_repository, sample_grade_data):
         """Test that ResourceNotFoundException is raised when grade doesn't exist"""
         mock_grade_repository.exists.return_value = False
 
@@ -109,17 +97,11 @@ class TestUpdateGradeUseCase:
         mock_grade_repository.exists.assert_called_once_with(sample_grade_data.id)
         mock_grade_repository.update.assert_not_called()
 
-    def test_execute_update_failed(
-        self,
-        use_case,
-        mock_grade_repository,
-        sample_grade_data
-    ):
+    def test_execute_update_failed(self, use_case, mock_grade_repository, sample_grade_data):
         """Test that CannotUpdateResourceException is raised when update fails"""
         mock_grade_repository.exists.return_value = True
         mock_grade_repository.update.return_value = None
 
-        # Act & Assert
         with pytest.raises(CannotUpdateResourceException) as exc_info:
             use_case.execute(sample_grade_data)
 
@@ -134,15 +116,10 @@ class TestUpdateGradeUseCase:
         mock_student_repository,
         mock_grade_service,
         sample_grade_data,
-        sample_student
+        sample_student,
     ):
         """Test that cascade update correctly recalculates student average"""
-        updated_grade = Grade(
-            id=1,
-            student_id="S12345",
-            subject_id="MATH101",
-            value=95.0
-        )
+        updated_grade = Grade(id=1, student_id="S12345", subject_id="MATH101", value=95.0)
 
         all_student_grades = [
             Grade(id=1, student_id="S12345", subject_id="MATH101", value=95.0),
@@ -183,15 +160,10 @@ class TestUpdateGradeUseCase:
         mock_student_repository,
         mock_grade_service,
         sample_grade_data,
-        sample_student
+        sample_student,
     ):
         """Test update when calculated average is zero"""
-        updated_grade = Grade(
-            id=1,
-            student_id="S12345",
-            subject_id="MATH101",
-            value=0.0
-        )
+        updated_grade = Grade(id=1, student_id="S12345", subject_id="MATH101", value=0.0)
 
         all_student_grades = [
             Grade(id=1, student_id="S12345", subject_id="MATH101", value=0.0),
