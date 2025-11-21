@@ -17,6 +17,8 @@ from domain.utils.constants import UNEXPECTED_ERROR
 
 from infrastructure.db.database import get_db
 from infrastructure.repositories.subject_repository_impl import SubjectRepositoryImpl
+from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
+from infrastructure.repositories.grade_repository_impl import GradeRepositoryImpl
 from infrastructure.schemas.subject_schema import CreateSubjectDTO, UpdateSubjectDTO, SubjectResponseDTO
 from infrastructure.mappers.subject_mappers import map_create_subject_dto_to_entity, map_update_subject_dto_to_entity
 
@@ -86,7 +88,7 @@ async def get_subjects_by_semester(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=UNEXPECTED_ERROR + str(e)
         )
-            
+
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[SubjectResponseDTO])
 async def get_all_subjects(
     db: Session = Depends(get_db),
@@ -118,8 +120,10 @@ async def update_subject(
     db: Session = Depends(get_db)
 ) -> SubjectResponseDTO:
     try:
-        repo = SubjectRepositoryImpl(db)
-        use_case = UpdateSubjectUseCase(repo)
+        subject_repo = SubjectRepositoryImpl(db)
+        student_repo = StudentRepositoryImpl(db)
+        grade_repo = GradeRepositoryImpl(db)
+        use_case = UpdateSubjectUseCase(subject_repo, grade_repo, student_repo)
         updated_subject = use_case.execute(
             map_update_subject_dto_to_entity(subject_id, subject_data)
         )
