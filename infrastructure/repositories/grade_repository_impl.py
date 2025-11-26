@@ -139,3 +139,35 @@ class GradeRepositoryImpl(GradeRepository):
                 return False
 
         return True
+
+    def delete_by_student_id(self, student_id: str) -> bool:
+        """ "
+        Removes all grades associated with a student.
+        Useful when a student changes semesters.
+        """
+        grade_models = self.db.query(GradeModel).filter(GradeModel.student_id == student_id).delete()
+
+        if not grade_models:
+            return False
+
+        self.db.commit()
+
+        return True
+
+    def delete_by_subject_id(self, subject_id: str) -> bool:
+        grade_models = self.db.query(GradeModel).filter(GradeModel.subject_id == subject_id).delete()
+
+        if not grade_models:
+            return False
+
+        self.db.commit()
+
+        return True
+
+    def exists_grade_for_student_and_subject(self, student_id: str, subject_id: str) -> bool:
+        """
+        Prevents duplicates when reassigning subjects.
+        """
+        grade_model = self.db.query(GradeModel).filter(GradeModel.student_id == student_id, GradeModel.subject_id == subject_id).first()
+
+        return grade_model is not None

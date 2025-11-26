@@ -21,12 +21,10 @@ from infrastructure.mappers.student_mappers import (
     map_create_student_dto_to_entity,
     map_update_student_dto_to_entity,
 )
+from infrastructure.repositories.grade_repository_impl import GradeRepositoryImpl
 from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
-from infrastructure.schemas.student_schema import (
-    CreateStudentDTO,
-    StudentResponseDTO,
-    UpdateStudentDTO,
-)
+from infrastructure.repositories.subject_repository_impl import SubjectRepositoryImpl
+from infrastructure.schemas.student_schema import CreateStudentDTO, StudentResponseDTO, UpdateStudentDTO
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
@@ -57,17 +55,10 @@ async def get_student_by_id(student_id: str, db: Session = Depends(get_db)) -> S
     except ResourceNotFoundException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=UNEXPECTED_ERROR + str(e),
-        ) from e
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=UNEXPECTED_ERROR + str(e)) from e
 
 
-@router.get(
-    "/semester/{students_semester}",
-    status_code=status.HTTP_200_OK,
-    response_model=List[StudentResponseDTO],
-)
+@router.get("/semester/{students_semester}", status_code=status.HTTP_200_OK, response_model=List[StudentResponseDTO])
 async def get_students_by_semester(students_semester: int, db: Session = Depends(get_db)) -> List[StudentResponseDTO]:
     try:
         repo = StudentRepositoryImpl(db)
@@ -111,8 +102,10 @@ async def get_all_students(
 @router.put("/{student_id}", status_code=status.HTTP_200_OK, response_model=StudentResponseDTO)
 async def update_student(student_id: str, student_data: UpdateStudentDTO, db: Session = Depends(get_db)) -> StudentResponseDTO:
     try:
-        repo = StudentRepositoryImpl(db)
-        use_case = UpdateStudentUseCase(repo)
+        student_repo = StudentRepositoryImpl(db)
+        subject_repo = SubjectRepositoryImpl(db)
+        grade_repo = GradeRepositoryImpl(db)
+        use_case = UpdateStudentUseCase(student_repo, subject_repo, grade_repo)
         updated_student = use_case.execute(map_update_student_dto_to_entity(student_id, student_data))
         return StudentResponseDTO.model_validate(updated_student)
     except ResourceNotFoundException as e:

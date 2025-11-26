@@ -21,12 +21,10 @@ from infrastructure.mappers.subject_mappers import (
     map_create_subject_dto_to_entity,
     map_update_subject_dto_to_entity,
 )
+from infrastructure.repositories.grade_repository_impl import GradeRepositoryImpl
+from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
 from infrastructure.repositories.subject_repository_impl import SubjectRepositoryImpl
-from infrastructure.schemas.subject_schema import (
-    CreateSubjectDTO,
-    SubjectResponseDTO,
-    UpdateSubjectDTO,
-)
+from infrastructure.schemas.subject_schema import CreateSubjectDTO, SubjectResponseDTO, UpdateSubjectDTO
 
 router = APIRouter(prefix="/subjects", tags=["Subjects"])
 
@@ -77,10 +75,7 @@ async def get_subjects_by_semester(subjects_semester: int, db: Session = Depends
     except ResourceNotFoundException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=UNEXPECTED_ERROR + str(e),
-        ) from e
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=UNEXPECTED_ERROR + str(e)) from e
 
 
 @router.get("/", status_code=status.HTTP_200_OK, response_model=list[SubjectResponseDTO])
@@ -111,8 +106,10 @@ async def get_all_subjects(
 @router.put("/{subject_id}", status_code=status.HTTP_200_OK, response_model=SubjectResponseDTO)
 async def update_subject(subject_id: str, subject_data: UpdateSubjectDTO, db: Session = Depends(get_db)) -> SubjectResponseDTO:
     try:
-        repo = SubjectRepositoryImpl(db)
-        use_case = UpdateSubjectUseCase(repo)
+        subject_repo = SubjectRepositoryImpl(db)
+        student_repo = StudentRepositoryImpl(db)
+        grade_repo = GradeRepositoryImpl(db)
+        use_case = UpdateSubjectUseCase(subject_repo, grade_repo, student_repo)
         updated_subject = use_case.execute(map_update_subject_dto_to_entity(subject_id, subject_data))
         return SubjectResponseDTO.model_validate(updated_subject)
     except ResourceNotFoundException as e:
