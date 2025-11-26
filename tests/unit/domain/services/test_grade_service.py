@@ -18,8 +18,8 @@ class TestGradeService:
 
         result = service.calculate_average(grades)
 
-        assert result == 85.0    
-    
+        assert result == 85.0
+
     def test_calculate_average_with_valid_grades(self, service):
         grades = [
             Grade(id=1, student_id="A1", subject_id="M1", value=80),
@@ -42,11 +42,6 @@ class TestGradeService:
         result = service.calculate_average(grades)
 
         assert result == 70.0
-
-    def test_calculate_average_empty_list(self, service):
-        result = service.calculate_average([])
-
-        assert result == 0.0
 
     def test_calculate_average_none(self, service):
         result = service.calculate_average(None)

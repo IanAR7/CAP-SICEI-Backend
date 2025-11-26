@@ -1,4 +1,3 @@
-import pytest
 from fastapi import HTTPException
 
 from domain.utils.exception_detail_wrapper import exception_detail_wrapper
@@ -9,11 +8,7 @@ def test_exception_detail_wrapper_creates_http_exception():
     status_code = 400
     error_type = "ValueError"
 
-    result = exception_detail_wrapper(
-        status_code=status_code,
-        exception=original_exception,
-        error_type=error_type
-    )
+    result = exception_detail_wrapper(status_code=status_code, exception=original_exception, error_type=error_type)
 
     assert isinstance(result, HTTPException)
     assert result.status_code == status_code
