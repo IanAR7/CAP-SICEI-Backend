@@ -16,6 +16,8 @@ from domain.exceptions.cannot_delete_resource_exception import CannotDeleteResou
 from domain.utils.constants import UNEXPECTED_ERROR
 
 from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
+from infrastructure.repositories.subject_repository_impl import SubjectRepositoryImpl
+from infrastructure.repositories.grade_repository_impl import GradeRepositoryImpl
 from infrastructure.schemas.student_schema import CreateStudentDTO, UpdateStudentDTO, StudentResponseDTO
 from infrastructure.mappers.student_mappers import map_create_student_dto_to_entity, map_update_student_dto_to_entity
 from infrastructure.db.database import get_db
@@ -65,7 +67,7 @@ async def get_student_by_id(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=UNEXPECTED_ERROR + str(e)
         )
-    
+
 @router.get("/semester/{students_semester}", status_code=status.HTTP_200_OK, response_model=List[StudentResponseDTO])
 async def get_students_by_semester(
     students_semester: int,
@@ -119,8 +121,10 @@ async def update_student(
     db: Session = Depends(get_db)
 ) -> StudentResponseDTO:
     try:
-        repo = StudentRepositoryImpl(db)
-        use_case = UpdateStudentUseCase(repo)
+        student_repo = StudentRepositoryImpl(db)
+        subject_repo = SubjectRepositoryImpl(db)
+        grade_repo = GradeRepositoryImpl(db)
+        use_case = UpdateStudentUseCase(student_repo, subject_repo, grade_repo)
         updated_student = use_case.execute(
             map_update_student_dto_to_entity(student_id, student_data)
         )
