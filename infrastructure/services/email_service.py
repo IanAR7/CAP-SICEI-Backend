@@ -13,10 +13,10 @@ class EmailServiceImpl(NotificationService):
     """
     Implementación del servicio de notificación por email usando SMTP.
     """
-    
+
     def __init__(self):
         self.settings = get_settings()
-    
+
     async def send_email(
         self,
         recipients: List[str],
@@ -26,32 +26,32 @@ class EmailServiceImpl(NotificationService):
     ) -> bool:
         """
         Envía un email a una lista de destinatarios.
-        
+
         Args:
             recipients: Lista de emails destinatarios
             subject: Asunto del email
             message: Cuerpo del mensaje
             html: Si el mensaje es HTML o texto plano
-            
+
         Returns:
             True si se envió correctamente, False en caso contrario
         """
         try:
-    
+
             msg = MIMEMultipart('alternative')
             msg['From'] = f"{self.settings.EMAIL_FROM_NAME} <{self.settings.EMAIL_FROM}>"
             msg['To'] = ", ".join(recipients)
             msg['Subject'] = subject
-            
-       
+
+
             if html:
                 part = MIMEText(message, 'html', 'utf-8')
             else:
                 part = MIMEText(message, 'plain', 'utf-8')
-            
+
             msg.attach(part)
-            
-       
+
+
             async with aiosmtplib.SMTP(
                 hostname=self.settings.EMAIL_HOST,
                 port=self.settings.EMAIL_PORT,
@@ -62,14 +62,14 @@ class EmailServiceImpl(NotificationService):
                     self.settings.EMAIL_PASSWORD
                 )
                 await smtp.send_message(msg)
-            
+
             logger.info(f"Email enviado exitosamente a {len(recipients)} destinatarios")
             return True
-            
+
         except Exception as e:
             logger.error(f"Error enviando email: {str(e)}")
             return False
-    
+
     async def send_sms(self, recipients: List[str], message: str) -> bool:
         """
         SMS no está implementado en este servicio.
@@ -77,7 +77,7 @@ class EmailServiceImpl(NotificationService):
         """
         logger.warning("send_sms llamado en EmailService, usar SMSService en su lugar")
         return False
-    
+
     async def send_alert(self, alert) -> bool:
         """
         Envía una alerta por email.
@@ -93,24 +93,24 @@ class EmailTemplateService:
     """
     Servicio para generar templates HTML de emails.
     """
-    
+
     @staticmethod
     def generate_alert_email(title: str, message: str, alert_type: str) -> str:
         """
         Genera un email HTML profesional para alertas.
         """
-       
+
         colors = {
-            "risk_of_failure": "#dc3545",  
-            "attendance": "#ffc107",      
-            "school_event": "#17a2b8",     
-            "holiday": "#6c757d",           
-            "grades_published": "#28a745",  
-            "general": "#007bff"            
+            "risk_of_failure": "#dc3545",
+            "attendance": "#ffc107",
+            "school_event": "#17a2b8",
+            "holiday": "#6c757d",
+            "grades_published": "#28a745",
+            "general": "#007bff"
         }
-        
+
         color = colors.get(alert_type, "#007bff")
-        
+
         html = f"""
         <!DOCTYPE html>
         <html>

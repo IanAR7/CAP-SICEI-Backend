@@ -38,10 +38,25 @@ class GradeModel(Base):
     student = relationship("StudentModel", backref="grades")
     subject = relationship("SubjectModel", backref="grades")
 
+class ProfessorModel(Base):
+    __tablename__ = 'professors'
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+
+    user_id = Column(String, nullable=False, unique=True)
+
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    phone = Column(String, nullable=True)
+    department = Column(String, nullable=True)
+
+    attendances = relationship("AttendanceModel", backref="professor")
+
 
 class AttendanceModel(Base):
     __tablename__ = "attendances"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     student_id = Column(String, ForeignKey("students.id"), nullable=False)
     subject_id = Column(String, ForeignKey("subjects.id"), nullable=False)
@@ -86,8 +101,8 @@ class AlertModel(Base):
     alert_type = Column(SQLEnum(AlertTypeEnum), nullable=False, index=True)
     status = Column(SQLEnum(AlertStatusEnum), default=AlertStatusEnum.draft, nullable=False, index=True)
     channel = Column(SQLEnum(NotificationChannelEnum), nullable=False)
-    target_recipients = Column(JSON, nullable=False)  
-    created_by = Column(String(50), nullable=False)  
+    target_recipients = Column(JSON, nullable=False)
+    created_by = Column(String(50), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     scheduled_at = Column(DateTime(timezone=True), nullable=True, index=True)
     sent_at = Column(DateTime(timezone=True), nullable=True)

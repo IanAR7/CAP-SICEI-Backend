@@ -87,3 +87,24 @@ class GradeRepository(ABC):
         To check if a student is regular based on their grades.
         """
         pass
+
+    @abstractmethod
+    def delete_by_student_id(self, student_id: str) -> bool:
+        """
+        To delete grades by student ID from the repository.
+        """
+        pass
+
+    @abstractmethod
+    def delete_by_subject_id(self, subject_id: str) -> bool:
+        """
+        To delete grades by subject ID from the repository.
+        """
+        pass
+
+    @abstractmethod
+    def exists_grade_for_student_and_subject(self, student_id: str, subject_id: str) -> bool:
+        """
+        To check if a grade exists for a specific student and subject in the repository.
+        """
+        pass

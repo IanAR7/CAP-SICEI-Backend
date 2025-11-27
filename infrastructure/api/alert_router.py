@@ -1,18 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status,
+    Query
+)
 from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from infrastructure.db.database import get_db
 from infrastructure.repositories.alert_repository_impl import AlertRepositoryImpl
-from infrastructure.schemas.alert_schema import CreateAlertDTO, UpdateAlertDTO, AlertResponseDTO
-from infrastructure.mappers.alert_mappers import map_create_alert_dto_to_entity, map_update_alert_dto_to_entity
+from infrastructure.schemas.alert_schema import CreateAlertDTO, AlertResponseDTO
+from infrastructure.mappers.alert_mappers import map_create_alert_dto_to_entity
 from infrastructure.services.email_service import EmailServiceImpl
-from infrastructure.services.sms_service import SMSServiceImpl
 
 from application.use_cases.alerts.create_alert import CreateAlertUseCase
 from application.use_cases.alerts.get_alert import GetAlertUseCase
-from application.use_cases.alerts.update_alert import UpdateAlertUseCase
-from application.use_cases.alerts.delete_alert import DeleteAlertUseCase
 from application.use_cases.alerts.send_alert import SendAlertUseCase
 
 from domain.entities.alert import AlertType, AlertStatus
@@ -53,7 +56,7 @@ async def send_alert(
     """Enviar una alerta manualmente"""
     try:
         repo = AlertRepositoryImpl(db)
-        notification_service = EmailServiceImpl()  
+        notification_service = EmailServiceImpl()
         use_case = SendAlertUseCase(repo, notification_service)
         alert = use_case.execute(alert_id)
         return AlertResponseDTO.model_validate(alert)

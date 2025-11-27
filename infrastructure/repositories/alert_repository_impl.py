@@ -15,7 +15,7 @@ class AlertRepositoryImpl(AlertRepository):
     """
     Implementación del repositorio de alertas usando SQLAlchemy.
     """
-    
+
     def __init__(self, db: Session):
         self.db = db
 
@@ -27,18 +27,18 @@ class AlertRepositoryImpl(AlertRepository):
         self.db.add(alert_model)
         self.db.commit()
         self.db.refresh(alert_model)
-        
+
         return map_alert_model_to_entity(alert_model)
-    
+
     def get_by_id(self, alert_id: int) -> Optional[Alert]:
         """
         Obtiene una alerta por su ID.
         """
         alert_model = self.db.query(AlertModel).filter(AlertModel.id == alert_id).first()
-        
+
         if not alert_model:
             return None
-        
+
         return map_alert_model_to_entity(alert_model)
 
     def get_all(
@@ -54,15 +54,15 @@ class AlertRepositoryImpl(AlertRepository):
         Obtiene todas las alertas con paginación y filtros.
         """
         query = self.db.query(AlertModel)
-        
+
         if alert_type:
             alert_type_db = AlertTypeEnum[alert_type.name]
             query = query.filter(AlertModel.alert_type == alert_type_db)
-        
+
         if status:
             status_db = AlertStatusEnum[status.name]
             query = query.filter(AlertModel.status == status_db)
-        
+
         if sort_field in ALLOWED_ALERT_SORT_FIELDS:
             if sort_order in ALLOWED_SORT_ORDERS and sort_order == "asc":
                 query = query.order_by(getattr(AlertModel, sort_field).asc())
@@ -73,7 +73,7 @@ class AlertRepositoryImpl(AlertRepository):
 
         query = query.offset((page - 1) * page_size).limit(page_size)
         alert_models = query.all()
-        
+
         return [map_alert_model_to_entity(alert_model) for alert_model in alert_models]
 
     def update(self, alert: Alert) -> Optional[Alert]:
@@ -81,7 +81,7 @@ class AlertRepositoryImpl(AlertRepository):
         Actualiza una alerta existente.
         """
         alert_model = self.db.query(AlertModel).filter(AlertModel.id == alert.id).first()
-        
+
         if not alert_model:
             return None
         if alert.title is not None:
@@ -89,11 +89,11 @@ class AlertRepositoryImpl(AlertRepository):
         if alert.message is not None:
             alert_model.message = alert.message
         if alert.alert_type is not None:
-            alert_model.alert_type = AlertTypeEnum[alert.alert_type.name]
+            alert_model.alert_type = AlertTypeEnum[alert.alert_type.name.lower()]
         if alert.status is not None:
-            alert_model.status = AlertStatusEnum[alert.status.name]
+            alert_model.status = AlertStatusEnum[alert.status.name.lower()]
         if alert.channel is not None:
-            alert_model.channel = NotificationChannelEnum[alert.channel.name]
+            alert_model.channel = NotificationChannelEnum[alert.channel.name.lower()]
         if alert.target_recipients is not None:
             alert_model.target_recipients = alert.target_recipients
         if alert.scheduled_at is not None:
@@ -102,10 +102,10 @@ class AlertRepositoryImpl(AlertRepository):
             alert_model.sent_at = alert.sent_at
         if alert.extra_data is not None:
             alert_model.extra_data = alert.extra_data
-        
+
         self.db.commit()
         self.db.refresh(alert_model)
-        
+
         return map_alert_model_to_entity(alert_model)
 
     def delete(self, alert_id: int) -> bool:
@@ -113,13 +113,13 @@ class AlertRepositoryImpl(AlertRepository):
         Elimina una alerta por su ID.
         """
         alert_model = self.db.query(AlertModel).filter(AlertModel.id == alert_id).first()
-        
+
         if not alert_model:
             return False
-        
+
         self.db.delete(alert_model)
         self.db.commit()
-        
+
         return True
 
     def exists(self, alert_id: int) -> bool:
@@ -134,7 +134,7 @@ class AlertRepositoryImpl(AlertRepository):
         Retorna alertas con status=SCHEDULED y scheduled_at <= ahora.
         """
         current_time = datetime.now()
-        
+
         alert_models = (
             self.db.query(AlertModel)
             .filter(
@@ -143,5 +143,5 @@ class AlertRepositoryImpl(AlertRepository):
             )
             .all()
         )
-        
+
         return [map_alert_model_to_entity(alert_model) for alert_model in alert_models]
