@@ -1,30 +1,64 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from contextlib import asynccontextmanager
+import logging
 
 from infrastructure.api.student_router import router as student_router
 from infrastructure.api.subject_router import router as subject_router
 from infrastructure.api.grade_router import router as grade_router
 from infrastructure.api.report_router import router as report_router
 from infrastructure.api.attendance_router import router as attendance_router
+from infrastructure.api.alert_router import router as alert_router
+
 from infrastructure.db.database import engine
 from infrastructure.db.models import Base
+
 from infrastructure.docs.openapi_tags import openapi_tags
 from infrastructure.docs.api_description import description
 
-app = FastAPI()
+from infrastructure.scheduler.alert_scheduler import AlertScheduler
 
-Base.metadata.create_all(bind=engine)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+alert_scheduler = AlertScheduler()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Maneja el ciclo de vida de la aplicación (startup y shutdown).
+    """
+    logger.info("Iniciando aplicación SICEI...")
+    Base.metadata.create_all(bind=engine)
+    logger.info("Base de datos inicializada")
+    
+    alert_scheduler.start()
+    logger.info("Scheduler de alertas iniciado")
+    
+    yield
+    
+    logger.info("Deteniendo aplicación...")
+    alert_scheduler.shutdown()
+    logger.info("Aplicación detenida correctamente")
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(student_router)
 app.include_router(subject_router)
 app.include_router(grade_router)
 app.include_router(report_router)
 app.include_router(attendance_router)
+app.include_router(alert_router)
 
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
+    
     openapi_schema = get_openapi(
         title="SICEI API",
         version="1.0.0",
@@ -38,15 +72,19 @@ def custom_openapi():
         routes=app.routes,
         tags=openapi_tags,
     )
+    
     openapi_schema["info"]["x-logo"] = {
         "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
     }
+    
     openapi_schema["info"]["x-contacts"] = [
         {"name": "Ruben Alvarado", "email": "ralvarado@outlook.com"},
         {"name": "Monica Garcilazo", "email": "mgarcilazo02@gmail.com"},
     ]
+    
     app.openapi_schema = openapi_schema
     return app.openapi_schema
+
 
 app.openapi = custom_openapi
 
@@ -59,3 +97,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+async def root():
+    return {
+        "message": "SICEI API",
+        "version": "1.0.0",
+        "scheduler_running": alert_scheduler.scheduler.running if alert_scheduler else False
+    }
