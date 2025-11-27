@@ -51,7 +51,6 @@ class EmailServiceImpl(NotificationService):
 
             msg.attach(part)
 
-
             async with aiosmtplib.SMTP(
                 hostname=self.settings.EMAIL_HOST,
                 port=self.settings.EMAIL_PORT,

@@ -12,7 +12,7 @@ from infrastructure.db.database import get_db
 from infrastructure.repositories.alert_repository_impl import AlertRepositoryImpl
 from infrastructure.schemas.alert_schema import CreateAlertDTO, AlertResponseDTO
 from infrastructure.mappers.alert_mappers import map_create_alert_dto_to_entity
-from infrastructure.services.email_service import EmailServiceImpl
+from infrastructure.services.notification_service_impl import CombinedNotificationService
 
 from application.use_cases.alerts.create_alert import CreateAlertUseCase
 from application.use_cases.alerts.get_alert import GetAlertUseCase
@@ -56,9 +56,9 @@ async def send_alert(
     """Enviar una alerta manualmente"""
     try:
         repo = AlertRepositoryImpl(db)
-        notification_service = EmailServiceImpl()
+        notification_service = CombinedNotificationService()
         use_case = SendAlertUseCase(repo, notification_service)
-        alert = use_case.execute(alert_id)
+        alert = await use_case.execute(alert_id)
         return AlertResponseDTO.model_validate(alert)
     except ResourceNotFoundException as e:
         raise HTTPException(
