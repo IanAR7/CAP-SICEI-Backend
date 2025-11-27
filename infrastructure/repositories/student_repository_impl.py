@@ -10,8 +10,6 @@ from infrastructure.utils.sort_fields import ALLOWED_STUDENT_SORT_FIELDS, ALLOWE
 from infrastructure.mappers.student_mappers import map_student_entity_to_model, map_student_model_to_entity
 
 class StudentRepositoryImpl(StudentRepository):
-    """Implementation of the StudentRepository interface using SQLAlchemy."""
-    
     def __init__(self, db: Session):
         self.db = db
 

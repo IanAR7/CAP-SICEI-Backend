@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from datetime import datetime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -35,3 +36,32 @@ class GradeModel(Base):
 
     student = relationship("StudentModel", backref="grades")
     subject = relationship("SubjectModel", backref="grades")
+
+class ProfessorModel(Base):
+    __tablename__ = 'professors'
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+
+    user_id = Column(String, nullable=False, unique=True)
+
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    phone = Column(String, nullable=True)
+    department = Column(String, nullable=True)
+
+    attendances = relationship("AttendanceModel", backref="professor")
+
+
+class AttendanceModel(Base):
+    __tablename__ = "attendances"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    student_id = Column(String, ForeignKey("students.id"), nullable=False)
+    subject_id = Column(String, ForeignKey("subjects.id"), nullable=False)
+    professor_id = Column(String, ForeignKey("professors.id"), nullable=True)  # Nuevo
+    date = Column(DateTime, nullable=False)
+    status = Column(String, nullable=False)  # "present", "absent", "late", "excused"
+    notes = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -10,8 +10,6 @@ from infrastructure.utils.sort_fields import ALLOWED_SUBJECT_SORT_FIELDS, ALLOWE
 from infrastructure.mappers.subject_mappers import map_subject_entity_to_model, map_subject_model_to_entity
 
 class SubjectRepositoryImpl(SubjectRepository):
-    """Implementation of the SubjectRepository interface using SQLAlchemy."""
-    
     def __init__(self, db: Session):
         self.db = db
 
