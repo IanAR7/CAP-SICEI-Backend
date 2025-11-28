@@ -1,13 +1,23 @@
 import pandas as pd
 import io
 from typing import List
+from domain.repositories.student_repository import StudentRepository
 from domain.services.prediction_service import PredictionService
 from infrastructure.schemas.student_prediction_schema import StudentRiskReportResponseDTO
 
 class GenerateDropoutReportUseCase:
 
-    def __init__(self, prediction_service: PredictionService):
+    REQUIRED_COLUMNS = [
+        "id","name","lastname","email","semester",
+        "internet_home","has_laptop","is_female","age",
+        "worked_last_week","household_size","prev_school_public",
+        "finished_prev_level","repeated_subjects","work_hours"
+    ]
+
+
+    def __init__(self, prediction_service: PredictionService, student_repository: StudentRepository):
         self.prediction_service = prediction_service
+        self.student_repository = student_repository
 
     def execute(self, file_content: bytes) -> List[StudentRiskReportResponseDTO]:
         try:
@@ -15,21 +25,25 @@ class GenerateDropoutReportUseCase:
         except Exception as e:
             raise ValueError(f"No se pudo leer el archivo CSV: {str(e)}")
 
-        # Creo que aquí igual sería bueno validar que el CSV tenga las columnas necesarias
-        ## Por ejemplo, validar que tenga la columna "id" para identificar al estudiante
-        # y las demás columnas que se usarán como features para la predicción
-        ## Si alguna columna falta, lanzar un error indicando qué columna falta
+        # Validar que el CSV tenga las columnas necesarias
 
-        # Obtener el ID del CSV para validar si el estudiante con ese ID existe en la base de datos
-        ### Si existe entonces que se tomen los demás datos y se haga la predicción
-        ### Si no existe, se omite esa fila y se continúa con la siguiente
-        ## Si se puede implementar que retorne los estudiantes que no se encontraron en la base de datos, sería ideal
-        ## pero tendrías que ver como retornar el json con los datos correctos y los incorrectos y modificar en el front como se pinta el reporte
+        missing_cols = [col for col in self.REQUIRED_COLUMNS if col not in df.columns]
 
-        report = []
+        if missing_cols:
+            raise ValueError(f"El CSV no contiene las columnas obligatorias: {missing_cols}")
+
+        processed_students: List[StudentRiskReportResponseDTO] = []
+        missing_students: List[str] = []   # Alumnos que NO existen en la BD
 
         for _, row in df.iterrows():
             try:
+                student_id = str(row["id"]).strip()
+
+                # Validar existencia del estudiante
+                if not self.student_repository.exists(student_id):
+                    missing_students.append(student_id)
+                    continue
+
                 model_features = {
                     "Internet_Casa": int(row.get("internet_home", 0)),
                     "Tiene_Laptop": int(row.get("has_laptop", 0)),
@@ -61,11 +75,13 @@ class GenerateDropoutReportUseCase:
                     risk_status=risk_level,
                     probability=round(probability, 4)
                 )
-
-                report.append(student_report)
+                processed_students.append(student_report)
 
             except Exception as e:
                 print(f"Error procesando fila {row.get('id', '?')}: {e}")
                 continue
 
-        return report
+        return {
+            "processed": processed_students,
+            "not_found": missing_students
+        }
