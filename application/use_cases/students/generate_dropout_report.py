@@ -8,6 +8,13 @@ from domain.repositories.student_repository import StudentRepository
 from domain.services.notification_service import NotificationService
 from domain.services.prediction_service import PredictionService
 from infrastructure.schemas.student_prediction_schema import StudentRiskReportResponseDTO
+from infrastructure.mappers.alert_mappers import map_create_alert_dto_to_entity
+from infrastructure.schemas.alert_schema import CreateAlertDTO
+
+
+
+from application.use_cases.alerts.create_alert import CreateAlertUseCase
+from application.use_cases.alerts.send_alert import SendAlertUseCase
 
 class GenerateDropoutReportUseCase:
 
@@ -30,7 +37,7 @@ class GenerateDropoutReportUseCase:
         self.alert_repository = alert_repository
         self.notification_service = notification_service
 
-    def execute(self, file_content: bytes) -> List[StudentRiskReportResponseDTO]:
+    async def execute(self, file_content: bytes) -> List[StudentRiskReportResponseDTO]:
         try:
             df = pd.read_csv(io.BytesIO(file_content))
         except Exception as e:
@@ -46,13 +53,24 @@ class GenerateDropoutReportUseCase:
         processed_students: List[StudentRiskReportResponseDTO] = []
         missing_students: List[str] = []   # Alumnos que NO existen en la BD
 
+        # Use cases reutilizando tu lógica actual de alertas
+        create_alert_uc = CreateAlertUseCase(self.alert_repository)
+        send_alert_uc = SendAlertUseCase(self.alert_repository, self.notification_service)
+
+
         for _, row in df.iterrows():
             try:
                 student_id = str(row["id"]).strip()
 
                 # Validar existencia del estudiante
                 if not self.student_repository.exists(student_id):
-                    missing_students.append(student_id)
+                    missing_students.append({
+                        "id": student_id,
+                        "name": str(row.get("name", "")),
+                        "lastname": str(row.get("lastname", "")),
+                        "email": str(row.get("email", "")),
+                        "semester": int(row.get("semester", 1))
+                    })
                     continue
 
                 model_features = {
@@ -89,25 +107,26 @@ class GenerateDropoutReportUseCase:
                 processed_students.append(student_report)
 
                 if risk_level != "Bajo":
-                    alert = Alert(
+                    alert_dto = CreateAlertDTO(
                         title=f"Academic Risk Alert - {risk_level}",
-                        message=f"Risk Level: {risk_level}\nProbability: {round(probability,4)}",
+                        message=(
+                            f"Hola {row.get('name', '').strip()},\n\n"
+                            f"Se ha detectado un nivel de riesgo *{risk_level}*.\n"
+                            f"Probabilidad estimada: {round(probability, 4)}.\n\n"
+                            "Te recomendamos acudir al área de apoyo académico."
+                        ),
                         alert_type="risk_of_failure",
-                        channel=NotificationChannel.EMAIL,
+                        channel="email",
                         target_recipients=[row["email"]],
                         created_by="system",
-                        created_at=datetime.now(),
                         scheduled_at=datetime.now(),
-                        extra_data={"student_id": student_id},
-                        status=AlertStatus.DRAFT
+                        extra_data={"student_id": student_id}
                     )
-                    created_alert = self.alert_repository.create(alert)
-                    self.notification_service.send_alert(created_alert)
 
-                    # Actualizar estado a SENT
-                    created_alert.status = AlertStatus.SENT
-                    created_alert.sent_at = datetime.now()
-                    self.alert_repository.update(created_alert)
+                    alert_entity = map_create_alert_dto_to_entity(alert_dto)
+
+                    created_alert = create_alert_uc.execute(alert_entity)
+                    await send_alert_uc.execute(created_alert.id)
 
             except Exception as e:
                 print(f"Error procesando fila {row.get('id', '?')}: {e}")

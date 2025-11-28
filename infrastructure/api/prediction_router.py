@@ -85,7 +85,7 @@ async def upload_students_csv(
     try:
         content = await file.read()
 
-        return use_case.execute(content)
+        return await use_case.execute(content)
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
