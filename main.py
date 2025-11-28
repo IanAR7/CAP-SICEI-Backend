@@ -10,6 +10,7 @@ from infrastructure.api.grade_router import router as grade_router
 from infrastructure.api.report_router import router as report_router
 from infrastructure.api.attendance_router import router as attendance_router
 from infrastructure.api.alert_router import router as alert_router
+from infrastructure.api.prediction_router import router as prediction_router
 
 from infrastructure.db.database import engine
 from infrastructure.db.models import Base
@@ -54,6 +55,7 @@ app.include_router(grade_router)
 app.include_router(report_router)
 app.include_router(attendance_router)
 app.include_router(alert_router)
+app.include_router(prediction_router)
 
 def custom_openapi():
     if app.openapi_schema:

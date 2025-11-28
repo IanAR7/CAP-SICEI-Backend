@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from typing import List
-
 @dataclass
 class Grade:
     id: int | None
