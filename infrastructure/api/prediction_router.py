@@ -6,6 +6,8 @@ from infrastructure.services.ml_prediction_service import XGBoostPredictionServi
 from domain.services.prediction_service import PredictionService
 from application.use_cases.students.generate_dropout_report import GenerateDropoutReportUseCase
 from infrastructure.schemas.student_prediction_schema import StudentRiskReportResponseDTO
+from infrastructure.repositories.alert_repository_impl import AlertRepositoryImpl
+from infrastructure.services.notification_service_impl import CombinedNotificationService
 from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
 from infrastructure.db.database import get_db
 
@@ -23,15 +25,24 @@ def get_student_repository(db = Depends(get_db)):
 def get_predict_use_case(service: PredictionService = Depends(get_prediction_service)) -> PredictDropoutUseCase:
     return PredictDropoutUseCase(service)
 
-def get_report_use_case(
-    service: PredictionService = Depends(get_prediction_service),
-    student_repo = Depends(get_student_repository)
-) -> GenerateDropoutReportUseCase:
-    return GenerateDropoutReportUseCase(
-        prediction_service=service,
-        student_repository=student_repo
-    )
+def get_alert_repository(db = Depends(get_db)):
+    return AlertRepositoryImpl(db)
 
+def get_notification_service():
+    return CombinedNotificationService()
+
+def get_report_use_case(
+    prediction_service = Depends(get_prediction_service),
+    student_repo = Depends(get_student_repository),
+    alert_repo = Depends(get_alert_repository),
+    notification_service = Depends(get_notification_service)
+):
+    return GenerateDropoutReportUseCase(
+        prediction_service=prediction_service,
+        student_repository=student_repo,
+        alert_repository=alert_repo,
+        notification_service=notification_service
+    )
 
 @router.post("/dropout-risk", response_model=RiskPrediction, status_code=status.HTTP_200_OK)
 async def predict_student_dropout(

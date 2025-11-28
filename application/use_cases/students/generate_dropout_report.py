@@ -1,7 +1,11 @@
+from datetime import datetime
 import pandas as pd
 import io
 from typing import List
+from domain.entities.alert import Alert, AlertStatus, NotificationChannel
+from domain.repositories.alert_repository import AlertRepository
 from domain.repositories.student_repository import StudentRepository
+from domain.services.notification_service import NotificationService
 from domain.services.prediction_service import PredictionService
 from infrastructure.schemas.student_prediction_schema import StudentRiskReportResponseDTO
 
@@ -14,10 +18,17 @@ class GenerateDropoutReportUseCase:
         "finished_prev_level","repeated_subjects","work_hours"
     ]
 
-
-    def __init__(self, prediction_service: PredictionService, student_repository: StudentRepository):
+    def __init__(
+        self,
+        prediction_service: PredictionService,
+        student_repository: StudentRepository,
+        alert_repository: AlertRepository,
+        notification_service: NotificationService
+    ):
         self.prediction_service = prediction_service
         self.student_repository = student_repository
+        self.alert_repository = alert_repository
+        self.notification_service = notification_service
 
     def execute(self, file_content: bytes) -> List[StudentRiskReportResponseDTO]:
         try:
@@ -76,6 +87,27 @@ class GenerateDropoutReportUseCase:
                     probability=round(probability, 4)
                 )
                 processed_students.append(student_report)
+
+                if risk_level != "Bajo":
+                    alert = Alert(
+                        title=f"Academic Risk Alert - {risk_level}",
+                        message=f"Risk Level: {risk_level}\nProbability: {round(probability,4)}",
+                        alert_type="risk_of_failure",
+                        channel=NotificationChannel.EMAIL,
+                        target_recipients=[row["email"]],
+                        created_by="system",
+                        created_at=datetime.now(),
+                        scheduled_at=datetime.now(),
+                        extra_data={"student_id": student_id},
+                        status=AlertStatus.DRAFT
+                    )
+                    created_alert = self.alert_repository.create(alert)
+                    self.notification_service.send_alert(created_alert)
+
+                    # Actualizar estado a SENT
+                    created_alert.status = AlertStatus.SENT
+                    created_alert.sent_at = datetime.now()
+                    self.alert_repository.update(created_alert)
 
             except Exception as e:
                 print(f"Error procesando fila {row.get('id', '?')}: {e}")
