@@ -37,12 +37,11 @@ class EmailServiceImpl(NotificationService):
             True si se envió correctamente, False en caso contrario
         """
         try:
-
+            
             msg = MIMEMultipart('alternative')
             msg['From'] = f"{self.settings.EMAIL_FROM_NAME} <{self.settings.EMAIL_FROM}>"
             msg['To'] = ", ".join(recipients)
             msg['Subject'] = subject
-
 
             if html:
                 part = MIMEText(message, 'html', 'utf-8')
@@ -51,6 +50,8 @@ class EmailServiceImpl(NotificationService):
 
             msg.attach(part)
 
+            logger.info(f"Conectando a SMTP: {self.settings.EMAIL_HOST}:{self.settings.EMAIL_PORT} (TLS: {self.settings.EMAIL_USE_TLS})")
+            
             async with aiosmtplib.SMTP(
                 hostname=self.settings.EMAIL_HOST,
                 port=self.settings.EMAIL_PORT,
@@ -62,11 +63,11 @@ class EmailServiceImpl(NotificationService):
                 )
                 await smtp.send_message(msg)
 
-            logger.info(f"Email enviado exitosamente a {len(recipients)} destinatarios")
+            logger.info(f"✅ Email enviado exitosamente a {len(recipients)} destinatarios")
             return True
 
         except Exception as e:
-            logger.error(f"Error enviando email: {str(e)}")
+            logger.error(f"❌ Error enviando email: {str(e)}")
             return False
 
     async def send_sms(self, recipients: List[str], message: str) -> bool:
@@ -74,19 +75,8 @@ class EmailServiceImpl(NotificationService):
         SMS no está implementado en este servicio.
         Usa SMSServiceImpl para enviar SMS.
         """
-        logger.warning("send_sms llamado en EmailService, usar SMSService en su lugar")
+        logger.warning("⚠️  send_sms llamado en EmailService, usar SMSService en su lugar")
         return False
-
-    async def send_alert(self, alert) -> bool:
-        """
-        Envía una alerta por email.
-        """
-        return await self.send_email(
-            recipients=alert.target_recipients,
-            subject=alert.title,
-            message=alert.message
-        )
-
 
 class EmailTemplateService:
     """
