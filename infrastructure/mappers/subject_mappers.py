@@ -70,5 +70,5 @@ def map_update_subject_dto_to_entity(subject_id: str, subject_dto: UpdateSubject
         description=subject_dto.description,
         credits=subject_dto.credits,
         semester=subject_dto.semester,
-        professor_id=None  # Assuming professor_id is not updated via UpdateSubjectDTO
+        professor_id=subject_dto.professor_id
     )
