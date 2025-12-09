@@ -13,17 +13,17 @@ class GetSubjectUseCase:
 
         if not subject_obtained:
             raise ResourceNotFoundException("Subject cannot be found by id")
-        
+
         return subject_obtained
-    
+
     def execute_by_semester(self, subjects_semester: int) -> list[Subject]:
         subjects_obtained = self.respository.get_by_semester(subjects_semester)
 
         if not subjects_obtained:
             raise ResourceNotFoundException("Subject cannot be found by id")
-        
+
         return subjects_obtained
-    
+
     def execute_all(
         self,
         page_size: int,
@@ -37,5 +37,5 @@ class GetSubjectUseCase:
             sort_field=sort_field,
             sort_order=sort_order
         )
-        
+
         return subjects_obtained

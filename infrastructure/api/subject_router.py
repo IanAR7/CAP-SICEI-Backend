@@ -32,7 +32,8 @@ async def create_subject(
 ) -> SubjectResponseDTO:
     try:
         repo = SubjectRepositoryImpl(db)
-        use_case = CreateSubjectUseCase(repo)
+        professor_repo = ProfessorRepositoryImpl(db)
+        use_case = CreateSubjectUseCase(repo, professor_repo)
         subject = use_case.execute(
             map_create_subject_dto_to_entity(subject_data)
         )

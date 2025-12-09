@@ -7,9 +7,9 @@ from domain.exceptions.cannot_create_exception import CannotCreateException
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
 
 class CreateSubjectUseCase:
-    def __init__(self, repository: SubjectRepository):
-        self.repository = repository,
-        self.professor_repository: ProfessorRepository
+    def __init__(self, subject_repository: SubjectRepository, professor_repository: ProfessorRepository):
+        self.repository = subject_repository
+        self.professor_repository = professor_repository
 
     def execute(self, subject_data: Subject) -> Subject:
 
@@ -21,6 +21,7 @@ class CreateSubjectUseCase:
         subject_data.id = self.generate_subject_id()
 
         created_subject = self.repository.create(subject_data)
+
 
         if not created_subject:
             raise CannotCreateException("Cannot create subject successfully")
