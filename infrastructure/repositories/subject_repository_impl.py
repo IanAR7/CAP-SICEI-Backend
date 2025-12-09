@@ -24,15 +24,16 @@ class SubjectRepositoryImpl(SubjectRepository):
             name=subject_model.name,
             description=subject_model.description,
             credits=subject_model.credits,
-            semester=subject_model.semester
+            semester=subject_model.semester,
+            professor_id=subject_model.professor_id
         )
-    
+
     def get_by_id(self, subject_id: str) -> Subject | None:
         subject_model = self.db.query(SubjectModel).filter(SubjectModel.id == subject_id).first()
 
         if not subject_model:
             return None
-        
+
         return map_subject_model_to_entity(subject_model)
 
     def get_by_semester(self, subjects_semester: int) -> List[Subject]:
@@ -61,10 +62,10 @@ class SubjectRepositoryImpl(SubjectRepository):
 
     def update(self, subject: Subject) -> Subject | None:
         subject_model = self.db.query(SubjectModel).filter(SubjectModel.id == subject.id).first()
-            
+
         if not subject_model:
             return None
-        
+
         if subject.name is not None:
             subject_model.name = subject.name
         if subject.description is not None:
@@ -82,7 +83,8 @@ class SubjectRepositoryImpl(SubjectRepository):
             name=subject_model.name,
             description=subject_model.description,
             credits=subject_model.credits,
-            semester=subject_model.semester
+            semester=subject_model.semester,
+            professor_id=subject_model.professor_id
         )
 
     def delete(self, subject_id: str) -> bool:
@@ -90,7 +92,7 @@ class SubjectRepositoryImpl(SubjectRepository):
 
         if not subject_model:
             return False
-        
+
         self.db.delete(subject_model)
         self.db.commit()
 

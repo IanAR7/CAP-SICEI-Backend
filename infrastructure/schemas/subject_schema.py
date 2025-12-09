@@ -8,6 +8,7 @@ class SubjectBaseDTO(BaseModel):
     description: str
     credits: int
     semester: int
+    professor_id: Optional[str] = None
 
 class CreateSubjectDTO(SubjectBaseDTO):
     """DTO for creating a new subject"""
@@ -20,6 +21,7 @@ class UpdateSubjectDTO(BaseModel):
     description: Optional[str] = None
     credits: Optional[int] = None
     semester: Optional[int] = None
+    professor_id: Optional[str] = None
 
     class Config:
         from_attributes = True

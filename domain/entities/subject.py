@@ -7,3 +7,4 @@ class Subject:
     description: str
     credits: int
     semester: int
+    professor_id: str
