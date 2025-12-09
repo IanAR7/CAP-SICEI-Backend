@@ -8,10 +8,11 @@ from fastapi import (
 from typing import List, Optional
 from sqlalchemy.orm import Session
 
+from application.use_cases.alerts.update_alert import UpdateAlertUseCase
 from infrastructure.db.database import get_db
 from infrastructure.repositories.alert_repository_impl import AlertRepositoryImpl
-from infrastructure.schemas.alert_schema import CreateAlertDTO, AlertResponseDTO
-from infrastructure.mappers.alert_mappers import map_create_alert_dto_to_entity
+from infrastructure.schemas.alert_schema import CreateAlertDTO, AlertResponseDTO, UpdateAlertDTO
+from infrastructure.mappers.alert_mappers import map_create_alert_dto_to_entity, map_update_alert_dto_to_entity
 from infrastructure.services.notification_service_impl import CombinedNotificationService
 
 from application.use_cases.alerts.create_alert import CreateAlertUseCase
@@ -94,6 +95,59 @@ async def get_all_alerts(
             sort_order=sort_order
         )
         return [AlertResponseDTO.model_validate(alert) for alert in alerts]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=UNEXPECTED_ERROR + str(e)
+        )
+        
+@router.get("/{alert_id}", status_code=status.HTTP_200_OK, response_model=AlertResponseDTO)
+async def get_alert_by_id(
+    alert_id: int,
+    db: Session = Depends(get_db)
+) -> AlertResponseDTO:
+    try:
+        repo = AlertRepositoryImpl(db)
+        use_case = GetAlertUseCase(repo)
+
+        alert = use_case.execute_by_id(alert_id)
+
+        return AlertResponseDTO.model_validate(alert)
+
+    except ResourceNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=UNEXPECTED_ERROR + str(e)
+        )
+
+
+@router.put("/{alert_id}", status_code=status.HTTP_200_OK, response_model=AlertResponseDTO)
+async def update_alert(
+    alert_id: int,
+    alert_data: UpdateAlertDTO,
+    db: Session = Depends(get_db)
+):
+    """Actualizar parcialmente una alerta existente"""
+    try:
+        repo = AlertRepositoryImpl(db)
+        use_case = UpdateAlertUseCase(repo)
+
+        alert_entity = map_update_alert_dto_to_entity(alert_id, alert_data)
+
+        updated_alert = use_case.execute(alert_entity)
+
+        return AlertResponseDTO.model_validate(updated_alert)
+
+    except ResourceNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
