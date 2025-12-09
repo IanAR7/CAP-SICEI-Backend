@@ -21,10 +21,13 @@ class SubjectModel(Base):
     __tablename__ = 'subjects'
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    professor_id = Column(String, ForeignKey("professors.id"), nullable=False)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     credits = Column(Integer, nullable=False)
     semester = Column(Integer, nullable=False)
+
+    professor = relationship("ProfessorModel", backref="subjects")
 
 
 class GradeModel(Base):
@@ -43,13 +46,10 @@ class ProfessorModel(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
 
-    user_id = Column(String, nullable=False, unique=True)
-
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     phone = Column(String, nullable=True)
-    department = Column(String, nullable=True)
 
     attendances = relationship("AttendanceModel", backref="professor")
 

@@ -10,6 +10,7 @@ from infrastructure.api.grade_router import router as grade_router
 from infrastructure.api.report_router import router as report_router
 from infrastructure.api.attendance_router import router as attendance_router
 from infrastructure.api.alert_router import router as alert_router
+from infrastructure.api.professor_router import router as professor_router
 
 from infrastructure.db.database import engine
 from infrastructure.db.models import Base
@@ -36,12 +37,12 @@ async def lifespan(app: FastAPI):
     logger.info("Iniciando aplicación SICEI...")
     Base.metadata.create_all(bind=engine)
     logger.info("Base de datos inicializada")
-    
+
     alert_scheduler.start()
     logger.info("Scheduler de alertas iniciado")
-    
+
     yield
-    
+
     logger.info("Deteniendo aplicación...")
     alert_scheduler.shutdown()
     logger.info("Aplicación detenida correctamente")
@@ -54,11 +55,12 @@ app.include_router(grade_router)
 app.include_router(report_router)
 app.include_router(attendance_router)
 app.include_router(alert_router)
+app.include_router(professor_router)
 
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
-    
+
     openapi_schema = get_openapi(
         title="SICEI API",
         version="1.0.0",
@@ -72,16 +74,16 @@ def custom_openapi():
         routes=app.routes,
         tags=openapi_tags,
     )
-    
+
     openapi_schema["info"]["x-logo"] = {
         "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
     }
-    
+
     openapi_schema["info"]["x-contacts"] = [
         {"name": "Ruben Alvarado", "email": "ralvarado@outlook.com"},
         {"name": "Monica Garcilazo", "email": "mgarcilazo02@gmail.com"},
     ]
-    
+
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 

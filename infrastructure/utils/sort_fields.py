@@ -10,5 +10,6 @@ ALLOWED_ALERT_SORT_FIELDS = [
     "scheduled_at",
     "sent_at"
 ]
+ALLOWED_PROFESSOR_SORT_FIELDS = {"id", "name", "lastname", "email", "semester"}
 ALLOWED_SORT_ORDERS = {"asc", "desc"}
 

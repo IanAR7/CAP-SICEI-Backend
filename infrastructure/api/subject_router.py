@@ -18,6 +18,7 @@ from domain.utils.constants import UNEXPECTED_ERROR
 from infrastructure.db.database import get_db
 from infrastructure.repositories.subject_repository_impl import SubjectRepositoryImpl
 from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
+from infrastructure.repositories.professor_repository_impl import ProfessorRepositoryImpl
 from infrastructure.repositories.grade_repository_impl import GradeRepositoryImpl
 from infrastructure.schemas.subject_schema import CreateSubjectDTO, UpdateSubjectDTO, SubjectResponseDTO
 from infrastructure.mappers.subject_mappers import map_create_subject_dto_to_entity, map_update_subject_dto_to_entity
@@ -31,7 +32,8 @@ async def create_subject(
 ) -> SubjectResponseDTO:
     try:
         repo = SubjectRepositoryImpl(db)
-        use_case = CreateSubjectUseCase(repo)
+        professor_repo = ProfessorRepositoryImpl(db)
+        use_case = CreateSubjectUseCase(repo, professor_repo)
         subject = use_case.execute(
             map_create_subject_dto_to_entity(subject_data)
         )
@@ -122,8 +124,9 @@ async def update_subject(
     try:
         subject_repo = SubjectRepositoryImpl(db)
         student_repo = StudentRepositoryImpl(db)
+        profesor_repo = ProfessorRepositoryImpl(db)
         grade_repo = GradeRepositoryImpl(db)
-        use_case = UpdateSubjectUseCase(subject_repo, grade_repo, student_repo)
+        use_case = UpdateSubjectUseCase(subject_repo, grade_repo, student_repo, profesor_repo)
         updated_subject = use_case.execute(
             map_update_subject_dto_to_entity(subject_id, subject_data)
         )
