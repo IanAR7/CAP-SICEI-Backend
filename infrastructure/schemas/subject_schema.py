@@ -8,7 +8,7 @@ class SubjectBaseDTO(BaseModel):
     description: str
     credits: int
     semester: int
-    professor_id: Optional[str] = None
+    professor_id: str
 
 class CreateSubjectDTO(SubjectBaseDTO):
     """DTO for creating a new subject"""

@@ -74,6 +74,8 @@ class SubjectRepositoryImpl(SubjectRepository):
             subject_model.credits = subject.credits
         if subject.semester is not None:
             subject_model.semester = subject.semester
+        if subject.professor_id is not None:
+            subject_model.professor_id = subject.professor_id
 
         self.db.commit()
         self.db.refresh(subject_model)
