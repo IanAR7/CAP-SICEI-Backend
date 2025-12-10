@@ -26,7 +26,7 @@ class UpdateSubjectUseCase:
         if not current_subject:
             raise ResourceNotFoundException("Subject cannot be found by id")
 
-        if subject_data.professor_id:
+        if subject_data.professor_id is not None and subject_data.professor_id != current_subject.professor_id:
             professor = self.professor_repository.get_by_id(subject_data.professor_id)
             if not professor:
                 raise ResourceNotFoundException(f"Professor with id {subject_data.professor_id} not found")
