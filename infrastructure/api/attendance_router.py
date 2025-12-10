@@ -11,7 +11,6 @@ from application.use_cases.attendances.get_attendance_analytics import GetAttend
 
 from domain.exceptions.cannot_create_exception import CannotCreateException
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
-from domain.exceptions.cannot_update_resource_exception import CannotUpdateResourceException
 from domain.exceptions.cannot_delete_resource_exception import CannotDeleteResourceException
 from domain.utils.constants import UNEXPECTED_ERROR
 
@@ -38,19 +37,19 @@ async def create_attendance(
         student_repo = StudentRepositoryImpl(db)
         subject_repo = SubjectRepositoryImpl(db)
         professor_repo = ProfessorRepositoryImpl(db)
-        
+
         use_case = CreateAttendanceUseCase(
             attendance_repo,
             student_repo,
             subject_repo,
             professor_repo
         )
-        
+
         attendance = use_case.execute(
             map_create_attendance_dto_to_entity(attendance_data)
         )
         return AttendanceResponseDTO.model_validate(attendance)
-    
+
     except ResourceNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -61,6 +60,26 @@ async def create_attendance(
             status_code=status.HTTP_409_CONFLICT,
             detail=str(e)
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=UNEXPECTED_ERROR + str(e)
+        )
+
+@router.get("/", status_code=status.HTTP_200_OK, response_model=List[AttendanceResponseDTO])
+async def get_all_attendances(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+) -> List[AttendanceResponseDTO]:
+    """
+    Get all attendance records.
+    """
+    try:
+        repo = AttendanceRepositoryImpl(db)
+        use_case = GetAttendanceUseCase(repo)
+        attendances = use_case.execute_get_all(skip, limit)
+        return [AttendanceResponseDTO.model_validate(a) for a in attendances]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
