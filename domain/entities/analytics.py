@@ -3,10 +3,15 @@ from typing import Literal
 
 class StudentFeatures(BaseModel):
     internet_home: int 
-    worked_last_week: int 
-    parents_education: int 
+    has_laptop: int
+    is_female: int
     age: int
-    # ... el resto de variables del ENAPE
+    works: int
+    num_people_home: int
+    prev_school_public: int
+    finished_prev_school: int
+    repeated_subjects: int
+    work_hours: float
 
 class RiskPrediction(BaseModel):
     probability: float
