@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.domain.entities.analytics import StudentFeatures, RiskPrediction, TrainingStatus
+from domain.entities.analytics import StudentFeatures, RiskPrediction, TrainingStatus
 
 class AnalyticsRepository(ABC):
     @abstractmethod

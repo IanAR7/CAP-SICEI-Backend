@@ -1,32 +1,39 @@
 from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, status
-from src.domain.entities.analytics import StudentFeatures, RiskPrediction
-from src.application.use_cases.ml.analytics_service import AnalyticsService
-from src.infrastructure.repositories.analytics_repository_impl import XGBoostRepositoryImpl
+from domain.entities.analytics import StudentFeatures, RiskPrediction
+from application.use_cases.ml.predict_dropout_use_case import PredictDropoutUseCase
+from application.use_cases.ml.train_model_use_case import TrainModelUseCase
+from infrastructure.repositories.analytics_repository_impl import XGBoostRepositoryImpl
+from domain.repositories.analytics_repository import AnalyticsRepository
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
-def get_analytics_service():
-    repository = XGBoostRepositoryImpl()
-    return AnalyticsService(repository)
+def get_analytics_repository() -> AnalyticsRepository:
+    return XGBoostRepositoryImpl()
 
-@POST("/predict", response_model=RiskPrediction)
+def get_predict_use_case(repo: AnalyticsRepository = Depends(get_analytics_repository)) -> PredictDropoutUseCase:
+    return PredictDropoutUseCase(repo)
+
+def get_train_use_case(repo: AnalyticsRepository = Depends(get_analytics_repository)) -> TrainModelUseCase:
+    return TrainModelUseCase(repo)
+
+@router.post("/predict", response_model=RiskPrediction)
 def predict_dropout(
     student: StudentFeatures,
-    service: AnalyticsService = Depends(get_analytics_service)
+    use_case: PredictDropoutUseCase = Depends(get_predict_use_case)
 ):
     try:
-        return service.analyze_student(student)
+        return use_case.execute(student)
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE, 
             detail="El modelo de IA no está listo. Ejecuta /train primero."
         )
 
-@POST("/train", status_code=status.HTTP_202_ACCEPTED)
+@router.post("/train", status_code=status.HTTP_202_ACCEPTED)
 def train_model(
     background_tasks: BackgroundTasks,
-    service: AnalyticsService = Depends(get_analytics_service)
+    use_case: TrainModelUseCase = Depends(get_train_use_case)
 ):
-    # Ejecutar en background para no bloquear la API
-    background_tasks.add_task(service.run_training_cycle)
+    # Ejecutar en background
+    background_tasks.add_task(use_case.execute)
     return {"message": "Entrenamiento iniciado en segundo plano"}
