@@ -1,15 +1,13 @@
-from domain.entities.alert import Alert, AlertStatus
-from domain.repositories.alert_repository import AlertRepository
-from domain.services.notification_service import NotificationService
-from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
 from datetime import datetime
 
+from domain.entities.alert import Alert, AlertStatus
+from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
+from domain.repositories.alert_repository import AlertRepository
+from domain.services.notification_service import NotificationService
+
+
 class SendAlertUseCase:
-    def __init__(
-        self,
-        alert_repository: AlertRepository,
-        notification_service: NotificationService
-    ):
+    def __init__(self, alert_repository: AlertRepository, notification_service: NotificationService):
         self.alert_repository = alert_repository
         self.notification_service = notification_service
 

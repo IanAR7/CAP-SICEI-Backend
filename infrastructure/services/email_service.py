@@ -1,13 +1,15 @@
-import aiosmtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from typing import List
 import logging
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from typing import List
+
+import aiosmtplib
 
 from domain.services.notification_service import NotificationService
 from infrastructure.config.settings import get_settings
 
 logger = logging.getLogger(__name__)
+
 
 class EmailServiceImpl(NotificationService):
     """
@@ -17,13 +19,7 @@ class EmailServiceImpl(NotificationService):
     def __init__(self):
         self.settings = get_settings()
 
-    async def send_email(
-        self,
-        recipients: List[str],
-        subject: str,
-        message: str,
-        html: bool = False
-    ) -> bool:
+    async def send_email(self, recipients: List[str], subject: str, message: str, html: bool = False) -> bool:
         """
         Envía un email a una lista de destinatarios.
 
@@ -37,30 +33,22 @@ class EmailServiceImpl(NotificationService):
             True si se envió correctamente, False en caso contrario
         """
         try:
-            
-            msg = MIMEMultipart('alternative')
-            msg['From'] = f"{self.settings.EMAIL_FROM_NAME} <{self.settings.EMAIL_FROM}>"
-            msg['To'] = ", ".join(recipients)
-            msg['Subject'] = subject
+            msg = MIMEMultipart("alternative")
+            msg["From"] = f"{self.settings.EMAIL_FROM_NAME} <{self.settings.EMAIL_FROM}>"
+            msg["To"] = ", ".join(recipients)
+            msg["Subject"] = subject
 
             if html:
-                part = MIMEText(message, 'html', 'utf-8')
+                part = MIMEText(message, "html", "utf-8")
             else:
-                part = MIMEText(message, 'plain', 'utf-8')
+                part = MIMEText(message, "plain", "utf-8")
 
             msg.attach(part)
 
             logger.info(f"Conectando a SMTP: {self.settings.EMAIL_HOST}:{self.settings.EMAIL_PORT} (TLS: {self.settings.EMAIL_USE_TLS})")
-            
-            async with aiosmtplib.SMTP(
-                hostname=self.settings.EMAIL_HOST,
-                port=self.settings.EMAIL_PORT,
-                use_tls=self.settings.EMAIL_USE_TLS
-            ) as smtp:
-                await smtp.login(
-                    self.settings.EMAIL_USERNAME,
-                    self.settings.EMAIL_PASSWORD
-                )
+
+            async with aiosmtplib.SMTP(hostname=self.settings.EMAIL_HOST, port=self.settings.EMAIL_PORT, use_tls=self.settings.EMAIL_USE_TLS) as smtp:
+                await smtp.login(self.settings.EMAIL_USERNAME, self.settings.EMAIL_PASSWORD)
                 await smtp.send_message(msg)
 
             logger.info(f"✅ Email enviado exitosamente a {len(recipients)} destinatarios")
@@ -78,6 +66,7 @@ class EmailServiceImpl(NotificationService):
         logger.warning("⚠️  send_sms llamado en EmailService, usar SMSService en su lugar")
         return False
 
+
 class EmailTemplateService:
     """
     Servicio para generar templates HTML de emails.
@@ -89,14 +78,7 @@ class EmailTemplateService:
         Genera un email HTML profesional para alertas.
         """
 
-        colors = {
-            "risk_of_failure": "#dc3545",
-            "attendance": "#ffc107",
-            "school_event": "#17a2b8",
-            "holiday": "#6c757d",
-            "grades_published": "#28a745",
-            "general": "#007bff"
-        }
+        colors = {"risk_of_failure": "#dc3545", "attendance": "#ffc107", "school_event": "#17a2b8", "holiday": "#6c757d", "grades_published": "#28a745", "general": "#007bff"}
 
         color = colors.get(alert_type, "#007bff")
 

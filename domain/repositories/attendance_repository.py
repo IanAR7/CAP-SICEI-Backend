@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from domain.entities.attendance import Attendance
 
 
@@ -20,12 +21,7 @@ class AttendanceRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_student(
-        self,
-        student_id: str,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
-    ) -> List[Attendance]:
+    def get_by_student(self, student_id: str, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None) -> List[Attendance]:
         """
         Retrieve all attendance records for a specific student.
         Optionally filter by date range.
@@ -33,11 +29,7 @@ class AttendanceRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_subject(
-        self,
-        subject_id: str,
-        date: Optional[datetime] = None
-    ) -> List[Attendance]:
+    def get_by_subject(self, subject_id: str, date: Optional[datetime] = None) -> List[Attendance]:
         """
         Retrieve all attendance records for a specific subject.
         Optionally filter by a specific date.
@@ -73,11 +65,7 @@ class AttendanceRepository(ABC):
         pass
 
     @abstractmethod
-    def get_attendance_stats(
-        self,
-        student_id: str,
-        subject_id: Optional[str] = None
-    ) -> dict:
+    def get_attendance_stats(self, student_id: str, subject_id: Optional[str] = None) -> dict:
         """
         Get attendance statistics for a student.
         Optionally filter by subject for ML prediction purposes.

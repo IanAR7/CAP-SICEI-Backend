@@ -1,23 +1,15 @@
-from domain.repositories.subject_repository import SubjectRepository
-from domain.repositories.grade_repository import GradeRepository
-from domain.repositories.student_repository import StudentRepository
-from domain.repositories.professor_repository import ProfessorRepository
+from domain.entities.grade import Grade
 from domain.entities.subject import Subject
 from domain.exceptions.cannot_update_resource_exception import CannotUpdateResourceException
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
 from domain.repositories.grade_repository import GradeRepository
+from domain.repositories.professor_repository import ProfessorRepository
 from domain.repositories.student_repository import StudentRepository
 from domain.repositories.subject_repository import SubjectRepository
 
 
 class UpdateSubjectUseCase:
-    def __init__(
-            self,
-            subject_repository: SubjectRepository,
-            grade_repository: GradeRepository,
-            student_repository: StudentRepository,
-            professor_repository: ProfessorRepository
-    ):
+    def __init__(self, subject_repository: SubjectRepository, grade_repository: GradeRepository, student_repository: StudentRepository, professor_repository: ProfessorRepository):
         self.subject_repository = subject_repository
         self.grade_repository = grade_repository
         self.student_repository = student_repository

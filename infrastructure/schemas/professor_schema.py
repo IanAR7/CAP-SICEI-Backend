@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+
 
 # Base con los campos comunes
 class ProfessorBaseDTO(BaseModel):
@@ -8,9 +10,11 @@ class ProfessorBaseDTO(BaseModel):
     email: str
     phone: Optional[str] = None
 
+
 # DTO para crear
 class CreateProfessorDTO(ProfessorBaseDTO):
     pass
+
 
 # DTO para actualizar (todo opcional para PATCH)
 class UpdateProfessorDTO(BaseModel):
@@ -19,8 +23,10 @@ class UpdateProfessorDTO(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
 
+
 class ProfessorResponseDTO(ProfessorBaseDTO):
     """DTO returned in response. Includes the professor ID"""
+
     id: str
 
     class Config:

@@ -25,14 +25,7 @@ class SubjectRepositoryImpl(SubjectRepository):
         self.db.commit()
         self.db.refresh(subject_model)
 
-        return Subject(
-            id=subject_model.id,
-            name=subject_model.name,
-            description=subject_model.description,
-            credits=subject_model.credits,
-            semester=subject_model.semester,
-            professor_id=subject_model.professor_id
-        )
+        return Subject(id=subject_model.id, name=subject_model.name, description=subject_model.description, credits=subject_model.credits, semester=subject_model.semester, professor_id=subject_model.professor_id)
 
     def get_by_id(self, subject_id: str) -> Subject | None:
         subject_model = self.db.query(SubjectModel).filter(SubjectModel.id == subject_id).first()
@@ -86,14 +79,7 @@ class SubjectRepositoryImpl(SubjectRepository):
         self.db.commit()
         self.db.refresh(subject_model)
 
-        return Subject(
-            id=subject_model.id,
-            name=subject_model.name,
-            description=subject_model.description,
-            credits=subject_model.credits,
-            semester=subject_model.semester,
-            professor_id=subject_model.professor_id
-        )
+        return Subject(id=subject_model.id, name=subject_model.name, description=subject_model.description, credits=subject_model.credits, semester=subject_model.semester, professor_id=subject_model.professor_id)
 
     def delete(self, subject_id: str) -> bool:
         subject_model = self.db.query(SubjectModel).filter(SubjectModel.id == subject_id).first()

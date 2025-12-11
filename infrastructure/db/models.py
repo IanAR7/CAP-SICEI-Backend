@@ -1,10 +1,14 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Text, DateTime, JSON, Enum as SQLEnum
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from infrastructure.db.database import Base
-from datetime import datetime
 import enum
 import uuid
+from datetime import datetime
+
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
+from infrastructure.db.database import Base
+
 
 class StudentModel(Base):
     __tablename__ = "students"
@@ -41,8 +45,9 @@ class GradeModel(Base):
     student = relationship("StudentModel", backref="grades")
     subject = relationship("SubjectModel", backref="grades")
 
+
 class ProfessorModel(Base):
-    __tablename__ = 'professors'
+    __tablename__ = "professors"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
 
@@ -67,8 +72,10 @@ class AttendanceModel(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
 class AlertTypeEnum(enum.Enum):
     """Tipos de alertas del sistema"""
+
     risk_of_failure = "risk_of_failure"
     attendance = "attendance"
     school_event = "school_event"
@@ -79,6 +86,7 @@ class AlertTypeEnum(enum.Enum):
 
 class AlertStatusEnum(enum.Enum):
     """Estados de las alertas"""
+
     draft = "draft"
     scheduled = "scheduled"
     sent = "sent"
@@ -87,6 +95,7 @@ class AlertStatusEnum(enum.Enum):
 
 class NotificationChannelEnum(enum.Enum):
     """Canales de notificación"""
+
     email = "email"
     sms = "sms"
     both = "both"

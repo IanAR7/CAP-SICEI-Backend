@@ -1,29 +1,24 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from contextlib import asynccontextmanager
-import logging
 
+from infrastructure.api.alert_router import router as alert_router
+from infrastructure.api.attendance_router import router as attendance_router
 from infrastructure.api.grade_router import router as grade_router
+from infrastructure.api.professor_router import router as professor_router
 from infrastructure.api.report_router import router as report_router
 from infrastructure.api.student_router import router as student_router
 from infrastructure.api.subject_router import router as subject_router
-from infrastructure.api.attendance_router import router as attendance_router
-from infrastructure.api.alert_router import router as alert_router
-from infrastructure.api.professor_router import router as professor_router
-
 from infrastructure.db.database import engine
 from infrastructure.db.models import Base
-
-from infrastructure.docs.openapi_tags import openapi_tags
 from infrastructure.docs.api_description import description
-
+from infrastructure.docs.openapi_tags import openapi_tags
 from infrastructure.scheduler.alert_scheduler import AlertScheduler
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 alert_scheduler = AlertScheduler()
@@ -47,6 +42,7 @@ async def lifespan(app: FastAPI):
     alert_scheduler.shutdown()
     logger.info("Aplicación detenida correctamente")
 
+
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(student_router)
@@ -57,6 +53,7 @@ app.include_router(report_router)
 app.include_router(attendance_router)
 app.include_router(alert_router)
 app.include_router(professor_router)
+
 
 def custom_openapi():
     if app.openapi_schema:
@@ -84,6 +81,7 @@ def custom_openapi():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
+
 app.openapi = custom_openapi
 
 origins = ["*"]
@@ -96,10 +94,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
-    return {
-        "message": "SICEI API",
-        "version": "1.0.0",
-        "scheduler_running": alert_scheduler.scheduler.running if alert_scheduler else False
-    }
+    return {"message": "SICEI API", "version": "1.0.0", "scheduler_running": alert_scheduler.scheduler.running if alert_scheduler else False}

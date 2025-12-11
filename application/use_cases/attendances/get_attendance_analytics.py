@@ -1,12 +1,12 @@
 from domain.repositories.attendance_repository import AttendanceRepository
 
-class GetAttendanceAnalyticsUseCase:
 
+class GetAttendanceAnalyticsUseCase:
     """Para alimentar el modelo, Modificar implementacion luego"""
 
     def __init__(self, repository: AttendanceRepository):
         self.repository = repository
-    
+
     def execute(self, student_id: str, subject_id: str = None) -> dict:
         """
         Retorna estadísticas de asistencia:
