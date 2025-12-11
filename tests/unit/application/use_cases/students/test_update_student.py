@@ -27,11 +27,7 @@ class TestUpdateStudentUseCase:
 
     @pytest.fixture
     def use_case(self, mock_student_repository, mock_subject_repository, mock_grade_repository):
-        return UpdateStudentUseCase(
-            mock_student_repository,
-            mock_subject_repository,
-            mock_grade_repository
-        )
+        return UpdateStudentUseCase(mock_student_repository, mock_subject_repository, mock_grade_repository)
 
     @pytest.fixture
     def sample_student_data(self):

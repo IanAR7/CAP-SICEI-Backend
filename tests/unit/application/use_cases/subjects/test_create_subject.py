@@ -19,34 +19,17 @@ class TestCreateSubjectUseCase:
 
     @pytest.fixture
     def use_case(self, mock_subject_repository, mock_profesor_repository):
-        return CreateSubjectUseCase(
-            mock_subject_repository,
-            mock_profesor_repository
-        )
+        return CreateSubjectUseCase(mock_subject_repository, mock_profesor_repository)
 
     @pytest.fixture
     def sample_subject_data(self):
-        return Subject(
-            id=None,
-            name="Matemáticas",
-            description="Cálculo diferencial",
-            credits=4,
-            semester=5,
-            professor_id=5
-        )
+        return Subject(id=None, name="Matemáticas", description="Cálculo diferencial", credits=4, semester=5, professor_id=5)
 
     # ========== Tests for execute ==========
 
     def test_execute_success(self, use_case, mock_subject_repository, sample_subject_data):
         generated_uuid = "550e8400-e29b-41d4-a716-446655440000"
-        created_subject = Subject(
-            id=generated_uuid,
-            name="Matemáticas",
-            description="Cálculo diferencial",
-            credits=4,
-            semester=5,
-            professor_id=5
-        )
+        created_subject = Subject(id=generated_uuid, name="Matemáticas", description="Cálculo diferencial", credits=4, semester=5, professor_id=5)
         mock_subject_repository.exists.return_value = False
         mock_subject_repository.create.return_value = created_subject
 
@@ -76,14 +59,7 @@ class TestCreateSubjectUseCase:
 
     def test_execute_assigns_id_before_creation(self, use_case, mock_subject_repository, sample_subject_data):
         generated_uuid = "123e4567-e89b-12d3-a456-426614174000"
-        created_subject = Subject(
-            id=generated_uuid,
-            name="Matemáticas",
-            description="Cálculo diferencial",
-            credits=4,
-            semester=5,
-            professor_id=5
-        )
+        created_subject = Subject(id=generated_uuid, name="Matemáticas", description="Cálculo diferencial", credits=4, semester=5, professor_id=5)
         mock_subject_repository.exists.return_value = False
         mock_subject_repository.create.return_value = created_subject
 

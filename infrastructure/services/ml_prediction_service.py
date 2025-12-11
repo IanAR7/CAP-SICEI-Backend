@@ -1,11 +1,14 @@
-import xgboost as xgb
-import pandas as pd
 import logging
 import os
-from typing import Dict, Any
+from typing import Any, Dict
+
+import pandas as pd
+import xgboost as xgb
+
 from domain.services.prediction_service import PredictionService
 
 logger = logging.getLogger(__name__)
+
 
 class XGBoostPredictionServiceImpl(PredictionService):
     """

@@ -1,5 +1,6 @@
 from domain.services.prediction_service import PredictionService
-from infrastructure.schemas.student_prediction_schema import StudentSocioEconomicDataDTO, PredictionResponseDTO
+from infrastructure.schemas.student_prediction_schema import PredictionResponseDTO, StudentSocioEconomicDataDTO
+
 
 class PredictDropoutUseCase:
     """
@@ -23,7 +24,7 @@ class PredictDropoutUseCase:
             "Escuela_Publica_Ant": 1 if data.prev_school_public else 0,
             "Concluyo_Anterior": 1 if data.finished_prev_level else 0,
             "Recurso_Materias": 1 if data.repeated_subjects else 0,
-            "Horas_Trabajo": data.work_hours
+            "Horas_Trabajo": data.work_hours,
         }
 
         # Obtener probabilidad del servicio de dominio
@@ -39,8 +40,4 @@ class PredictDropoutUseCase:
             risk_level = "Medio"
             recommendation = "Ofrecer beca alimenticia o asesorías académicas."
 
-        return PredictionResponseDTO(
-            probability=round(probability, 4),
-            risk_level=risk_level,
-            recommendation=recommendation
-        )
+        return PredictionResponseDTO(probability=round(probability, 4), risk_level=risk_level, recommendation=recommendation)

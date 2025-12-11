@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Any, Dict
+
 
 class PredictionService(ABC):
-
     @abstractmethod
     def predict_dropout_risk(self, features: Dict[str, Any]) -> float:
         """

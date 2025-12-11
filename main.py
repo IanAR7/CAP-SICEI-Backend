@@ -8,16 +8,11 @@ from fastapi.openapi.utils import get_openapi
 from infrastructure.api.alert_router import router as alert_router
 from infrastructure.api.attendance_router import router as attendance_router
 from infrastructure.api.grade_router import router as grade_router
+from infrastructure.api.prediction_router import router as prediction_router
 from infrastructure.api.professor_router import router as professor_router
 from infrastructure.api.report_router import router as report_router
 from infrastructure.api.student_router import router as student_router
 from infrastructure.api.subject_router import router as subject_router
-from infrastructure.api.grade_router import router as grade_router
-from infrastructure.api.report_router import router as report_router
-from infrastructure.api.attendance_router import router as attendance_router
-from infrastructure.api.alert_router import router as alert_router
-from infrastructure.api.prediction_router import router as prediction_router
-
 from infrastructure.db.database import engine
 from infrastructure.db.models import Base
 from infrastructure.docs.api_description import description
@@ -80,9 +75,7 @@ def custom_openapi():
         tags=openapi_tags,
     )
 
-    openapi_schema["info"]["x-logo"] = {
-        "url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"
-    }
+    openapi_schema["info"]["x-logo"] = {"url": "https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png"}
 
     openapi_schema["info"]["x-contacts"] = [
         {"name": "Ruben Alvarado", "email": "ralvarado@outlook.com"},

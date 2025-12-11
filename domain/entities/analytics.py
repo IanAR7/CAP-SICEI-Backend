@@ -1,12 +1,15 @@
-from pydantic import BaseModel, Field
-from typing import Literal, Optional
 from dataclasses import dataclass
+from typing import Literal, Optional
+
+from pydantic import BaseModel, Field
+
 
 @dataclass
 class StudentFeatures(BaseModel):
     """
     Características del estudiante requeridas por el modelo de ML (XGBoost).
     """
+
     internet_home: int = Field(..., description="1 si tiene internet, 0 si no (P1_4_6)")
     has_laptop: int = Field(..., description="1 si tiene laptop/PC, 0 si no (P1_4_2)")
     is_female: int = Field(..., description="1 si es mujer, 0 si es hombre (SEXO)")
@@ -21,10 +24,12 @@ class StudentFeatures(BaseModel):
 
     parents_education: Optional[int] = Field(None, description="Nivel educativo de padres (Si aplica)")
 
+
 class RiskPrediction(BaseModel):
     probability: float
     risk_level: Literal["Bajo", "Medio", "CRÍTICO"]
     recommendation: str
+
 
 class TrainingStatus(BaseModel):
     success: bool
