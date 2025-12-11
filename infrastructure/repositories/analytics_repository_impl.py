@@ -238,7 +238,7 @@ class XGBoostRepositoryImpl(AnalyticsRepository):
             logger.info(f"Entrenamiento completado. Accuracy: {acc:.2%}")
             
             # 7. Guardar Modelo
-            model.save_model(str(MODEL_PATH))
+            model.get_booster().save_model(str(MODEL_PATH))
             self.model = model # Actualizar instancia en memoria
 
             return TrainingStatus(

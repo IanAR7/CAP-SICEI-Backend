@@ -115,4 +115,19 @@ class AlertModel(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     scheduled_at = Column(DateTime(timezone=True), nullable=True, index=True)
     sent_at = Column(DateTime(timezone=True), nullable=True)
-    extra_data = Column(JSON, nullable=True)
+
+class StudentRiskTestDataset(Base):
+    __tablename__ = 'Student_Risk_Test_Dataset'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    
+    internet_home = Column(Integer, nullable=False)        
+    has_laptop = Column(Integer, nullable=False)           
+    is_female = Column(Integer, nullable=False)            
+    age = Column(Integer, nullable=False)
+    works = Column(Integer, nullable=False)                
+    num_people_home = Column(Integer, nullable=False)
+    prev_school_public = Column(Integer, nullable=False)   
+    finished_prev_school = Column(Integer, nullable=False) 
+    repeated_subjects = Column(Integer, nullable=False)    
+    work_hours = Column(Float, nullable=False)
