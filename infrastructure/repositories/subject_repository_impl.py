@@ -16,8 +16,6 @@ from infrastructure.utils.sort_fields import (
 
 
 class SubjectRepositoryImpl(SubjectRepository):
-    """Implementation of the SubjectRepository interface using SQLAlchemy."""
-
     def __init__(self, db: Session):
         self.db = db
 
@@ -33,6 +31,7 @@ class SubjectRepositoryImpl(SubjectRepository):
             description=subject_model.description,
             credits=subject_model.credits,
             semester=subject_model.semester,
+            professor_id=subject_model.professor_id
         )
 
     def get_by_id(self, subject_id: str) -> Subject | None:
@@ -81,6 +80,8 @@ class SubjectRepositoryImpl(SubjectRepository):
             subject_model.credits = subject.credits
         if subject.semester is not None:
             subject_model.semester = subject.semester
+        if subject.professor_id is not None:
+            subject_model.professor_id = subject.professor_id
 
         self.db.commit()
         self.db.refresh(subject_model)
@@ -91,6 +92,7 @@ class SubjectRepositoryImpl(SubjectRepository):
             description=subject_model.description,
             credits=subject_model.credits,
             semester=subject_model.semester,
+            professor_id=subject_model.professor_id
         )
 
     def delete(self, subject_id: str) -> bool:

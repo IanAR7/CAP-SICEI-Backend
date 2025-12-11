@@ -32,6 +32,11 @@ class GetSubjectUseCase:
         sort_field: Optional[str] = None,
         sort_order: Optional[str] = None,
     ) -> List[Subject]:
-        subjects_obtained = self.respository.get_all(page_size=page_size, page=page, sort_field=sort_field, sort_order=sort_order)
+        subjects_obtained = self.respository.get_all(
+            page_size=page_size,
+            page=page,
+            sort_field=sort_field,
+            sort_order=sort_order
+        )
 
         return subjects_obtained

@@ -19,6 +19,7 @@ def map_create_subject_dto_to_entity(subject_dto: CreateSubjectDTO) -> Subject:
         description=subject_dto.description,
         credits=subject_dto.credits,
         semester=subject_dto.semester,
+        professor_id=subject_dto.professor_id
     )
 
 
@@ -38,6 +39,7 @@ def map_subject_entity_to_model(subject: Subject) -> SubjectModel:
         description=subject.description,
         credits=subject.credits,
         semester=subject.semester,
+        professor_id=subject.professor_id
     )
 
 
@@ -51,6 +53,7 @@ def map_subject_model_to_entity(subject_model: SubjectModel) -> Subject:
         description=subject_model.description,
         credits=subject_model.credits,
         semester=subject_model.semester,
+        professor_id=subject_model.professor_id
     )
 
 
@@ -70,4 +73,5 @@ def map_update_subject_dto_to_entity(subject_id: str, subject_dto: UpdateSubject
         description=subject_dto.description,
         credits=subject_dto.credits,
         semester=subject_dto.semester,
+        professor_id=subject_dto.professor_id
     )

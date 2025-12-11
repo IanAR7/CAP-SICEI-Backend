@@ -16,8 +16,6 @@ from infrastructure.utils.sort_fields import (
 
 
 class StudentRepositoryImpl(StudentRepository):
-    """Implementation of the StudentRepository interface using SQLAlchemy."""
-
     def __init__(self, db: Session):
         self.db = db
 

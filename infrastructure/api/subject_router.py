@@ -24,7 +24,11 @@ from infrastructure.mappers.subject_mappers import (
 from infrastructure.repositories.grade_repository_impl import GradeRepositoryImpl
 from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
 from infrastructure.repositories.subject_repository_impl import SubjectRepositoryImpl
-from infrastructure.schemas.subject_schema import CreateSubjectDTO, SubjectResponseDTO, UpdateSubjectDTO
+from infrastructure.repositories.student_repository_impl import StudentRepositoryImpl
+from infrastructure.repositories.professor_repository_impl import ProfessorRepositoryImpl
+from infrastructure.repositories.grade_repository_impl import GradeRepositoryImpl
+from infrastructure.schemas.subject_schema import CreateSubjectDTO, UpdateSubjectDTO, SubjectResponseDTO
+from infrastructure.mappers.subject_mappers import map_create_subject_dto_to_entity, map_update_subject_dto_to_entity
 
 router = APIRouter(prefix="/subjects", tags=["Subjects"])
 
@@ -33,8 +37,11 @@ router = APIRouter(prefix="/subjects", tags=["Subjects"])
 async def create_subject(subject_data: CreateSubjectDTO, db: Session = Depends(get_db)) -> SubjectResponseDTO:
     try:
         repo = SubjectRepositoryImpl(db)
-        use_case = CreateSubjectUseCase(repo)
-        subject = use_case.execute(map_create_subject_dto_to_entity(subject_data))
+        professor_repo = ProfessorRepositoryImpl(db)
+        use_case = CreateSubjectUseCase(repo, professor_repo)
+        subject = use_case.execute(
+            map_create_subject_dto_to_entity(subject_data)
+        )
         return SubjectResponseDTO.model_validate(subject)
     except CannotCreateException as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
@@ -108,9 +115,12 @@ async def update_subject(subject_id: str, subject_data: UpdateSubjectDTO, db: Se
     try:
         subject_repo = SubjectRepositoryImpl(db)
         student_repo = StudentRepositoryImpl(db)
+        profesor_repo = ProfessorRepositoryImpl(db)
         grade_repo = GradeRepositoryImpl(db)
-        use_case = UpdateSubjectUseCase(subject_repo, grade_repo, student_repo)
-        updated_subject = use_case.execute(map_update_subject_dto_to_entity(subject_id, subject_data))
+        use_case = UpdateSubjectUseCase(subject_repo, grade_repo, student_repo, profesor_repo)
+        updated_subject = use_case.execute(
+            map_update_subject_dto_to_entity(subject_id, subject_data)
+        )
         return SubjectResponseDTO.model_validate(updated_subject)
     except ResourceNotFoundException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
