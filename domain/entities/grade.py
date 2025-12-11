@@ -7,11 +7,13 @@ class Grade:
     subject_id: str
     value: float
 
+
 @dataclass
 class GradeToShowStudent:
     id: int
     subject: str
     value: float
+
 
 @dataclass
 class GradeToShowSubject:

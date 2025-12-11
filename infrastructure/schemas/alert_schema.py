@@ -1,7 +1,10 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
 from datetime import datetime
-from domain.entities.alert import AlertType, AlertStatus, NotificationChannel
+from typing import List, Optional
+
+from pydantic import BaseModel, Field
+
+from domain.entities.alert import AlertStatus, AlertType, NotificationChannel
+
 
 class CreateAlertDTO(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
@@ -13,6 +16,7 @@ class CreateAlertDTO(BaseModel):
     scheduled_at: Optional[datetime] = None
     extra_data: Optional[dict] = None
 
+
 class UpdateAlertDTO(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     message: Optional[str] = Field(None, min_length=1)
@@ -21,6 +25,7 @@ class UpdateAlertDTO(BaseModel):
     target_recipients: Optional[List[str]] = None
     scheduled_at: Optional[datetime] = None
     extra_data: Optional[dict] = None
+
 
 class AlertResponseDTO(BaseModel):
     id: int

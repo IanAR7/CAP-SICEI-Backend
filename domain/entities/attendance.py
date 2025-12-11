@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
+
 @dataclass
 class Attendance:
     id: Optional[str]
-    student_id: str 
+    student_id: str
     subject_id: str
     professor_id: Optional[str]
     date: datetime

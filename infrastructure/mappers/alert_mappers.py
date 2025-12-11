@@ -1,6 +1,7 @@
-from domain.entities.alert import Alert, AlertType, AlertStatus, NotificationChannel
+from domain.entities.alert import Alert, AlertStatus, AlertType, NotificationChannel
+from infrastructure.db.models import AlertModel, AlertStatusEnum, AlertTypeEnum, NotificationChannelEnum
 from infrastructure.schemas.alert_schema import CreateAlertDTO, UpdateAlertDTO
-from infrastructure.db.models import AlertModel, AlertTypeEnum, AlertStatusEnum, NotificationChannelEnum
+
 
 def map_create_alert_dto_to_entity(alert_dto: CreateAlertDTO) -> Alert:
     """
@@ -18,27 +19,16 @@ def map_create_alert_dto_to_entity(alert_dto: CreateAlertDTO) -> Alert:
         created_at=None,
         scheduled_at=alert_dto.scheduled_at,
         sent_at=None,
-        extra_data=alert_dto.extra_data
+        extra_data=alert_dto.extra_data,
     )
+
 
 def map_update_alert_dto_to_entity(alert_id: int, alert_dto: UpdateAlertDTO) -> Alert:
     """
     Mapea un UpdateAlertDTO a una entidad Alert del dominio.
     """
-    return Alert(
-        id=alert_id,
-        title=alert_dto.title,
-        message=alert_dto.message,
-        alert_type=alert_dto.alert_type,
-        status=None,
-        channel=alert_dto.channel,
-        target_recipients=alert_dto.target_recipients,
-        created_by=None,
-        created_at=None,
-        scheduled_at=alert_dto.scheduled_at,
-        sent_at=None,
-        extra_data=alert_dto.extra_data
-    )
+    return Alert(id=alert_id, title=alert_dto.title, message=alert_dto.message, alert_type=alert_dto.alert_type, status=None, channel=alert_dto.channel, target_recipients=alert_dto.target_recipients, created_by=None, created_at=None, scheduled_at=alert_dto.scheduled_at, sent_at=None, extra_data=alert_dto.extra_data)
+
 
 def map_alert_entity_to_model(alert: Alert) -> AlertModel:
     """
@@ -55,8 +45,9 @@ def map_alert_entity_to_model(alert: Alert) -> AlertModel:
         created_by=alert.created_by,
         scheduled_at=alert.scheduled_at,
         sent_at=alert.sent_at,
-        extra_data=alert.extra_data
+        extra_data=alert.extra_data,
     )
+
 
 def map_alert_model_to_entity(alert_model: AlertModel) -> Alert:
     """
@@ -74,5 +65,5 @@ def map_alert_model_to_entity(alert_model: AlertModel) -> Alert:
         created_at=alert_model.created_at,
         scheduled_at=alert_model.scheduled_at,
         sent_at=alert_model.sent_at,
-        extra_data=alert_model.extra_data
+        extra_data=alert_model.extra_data,
     )

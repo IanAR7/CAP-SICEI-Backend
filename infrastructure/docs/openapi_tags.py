@@ -18,5 +18,9 @@ openapi_tags = [
     {
         "name": "Attendance",
         "description": "Handles attendance records. Provides endpoints to mark, view, update, and delete attendance information for students.",
-    }
+    },
+    {
+        "name": "Professors",
+        "description": "Endpoints for managing professors. Allows for the creation, retrieval, updating, and deletion of professor records within the system.",
+    },
 ]

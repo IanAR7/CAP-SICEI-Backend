@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from domain.entities.alert import Alert, AlertType, AlertStatus
+
+from domain.entities.alert import Alert, AlertStatus, AlertType
+
 
 class AlertRepository(ABC):
     @abstractmethod
@@ -14,15 +16,7 @@ class AlertRepository(ABC):
         pass
 
     @abstractmethod
-    def get_all(
-        self,
-        page_size: int,
-        page: int,
-        alert_type: Optional[AlertType] = None,
-        status: Optional[AlertStatus] = None,
-        sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None
-    ) -> List[Alert]:
+    def get_all(self, page_size: int, page: int, alert_type: Optional[AlertType] = None, status: Optional[AlertStatus] = None, sort_field: Optional[str] = None, sort_order: Optional[str] = None) -> List[Alert]:
         """Obtener todas las alertas con filtros"""
         pass
 

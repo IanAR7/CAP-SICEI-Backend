@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Subject:
     id: str
@@ -7,3 +8,4 @@ class Subject:
     description: str
     credits: int
     semester: int
+    professor_id: str

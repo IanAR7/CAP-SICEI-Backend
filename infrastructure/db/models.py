@@ -1,13 +1,17 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Text, DateTime, JSON, Enum as SQLEnum
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from infrastructure.db.database import Base
-from datetime import datetime
 import enum
 import uuid
+from datetime import datetime
+
+from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
+from infrastructure.db.database import Base
+
 
 class StudentModel(Base):
-    __tablename__ = 'students'
+    __tablename__ = "students"
 
     id = Column(String, primary_key=True)
     name = Column(String, nullable=False)
@@ -18,17 +22,20 @@ class StudentModel(Base):
 
 
 class SubjectModel(Base):
-    __tablename__ = 'subjects'
+    __tablename__ = "subjects"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    professor_id = Column(String, ForeignKey("professors.id"), nullable=False)
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     credits = Column(Integer, nullable=False)
     semester = Column(Integer, nullable=False)
 
+    professor = relationship("ProfessorModel", backref="subjects")
+
 
 class GradeModel(Base):
-    __tablename__ = 'grades'
+    __tablename__ = "grades"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     student_id = Column(String, ForeignKey("students.id"), nullable=False)
@@ -38,18 +45,16 @@ class GradeModel(Base):
     student = relationship("StudentModel", backref="grades")
     subject = relationship("SubjectModel", backref="grades")
 
+
 class ProfessorModel(Base):
-    __tablename__ = 'professors'
+    __tablename__ = "professors"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-
-    user_id = Column(String, nullable=False, unique=True)
 
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     phone = Column(String, nullable=True)
-    department = Column(String, nullable=True)
 
     attendances = relationship("AttendanceModel", backref="professor")
 
@@ -67,8 +72,10 @@ class AttendanceModel(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
 class AlertTypeEnum(enum.Enum):
     """Tipos de alertas del sistema"""
+
     risk_of_failure = "risk_of_failure"
     attendance = "attendance"
     school_event = "school_event"
@@ -79,6 +86,7 @@ class AlertTypeEnum(enum.Enum):
 
 class AlertStatusEnum(enum.Enum):
     """Estados de las alertas"""
+
     draft = "draft"
     scheduled = "scheduled"
     sent = "sent"
@@ -87,6 +95,7 @@ class AlertStatusEnum(enum.Enum):
 
 class NotificationChannelEnum(enum.Enum):
     """Canales de notificación"""
+
     email = "email"
     sms = "sms"
     both = "both"
