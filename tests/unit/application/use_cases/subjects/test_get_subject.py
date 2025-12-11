@@ -24,6 +24,7 @@ class TestGetSubjectUseCase:
             description="Cálculo diferencial",
             credits=4,
             semester=5,
+            professor_id="PROF123",
         )
 
     @pytest.fixture
@@ -35,6 +36,7 @@ class TestGetSubjectUseCase:
                 description="Cálculo diferencial",
                 credits=4,
                 semester=5,
+                professor_id="PROF123",
             ),
             Subject(
                 id="FIS101",
@@ -42,6 +44,7 @@ class TestGetSubjectUseCase:
                 description="Mecánica clásica",
                 credits=4,
                 semester=5,
+                professor_id="PROF456",
             ),
         ]
 

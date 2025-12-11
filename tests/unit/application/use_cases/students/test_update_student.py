@@ -12,12 +12,26 @@ from domain.exceptions.resource_not_found_exception import ResourceNotFoundExcep
 
 class TestUpdateStudentUseCase:
     @pytest.fixture
-    def mock_repository(self):
+    def mock_student_repository(self):
         return Mock()
 
     @pytest.fixture
-    def use_case(self, mock_repository):
-        return UpdateStudentUseCase(mock_repository)
+    def mock_subject_repository(self):
+        repo = Mock()
+        repo.get_by_semester.return_value = []
+        return Mock()
+
+    @pytest.fixture
+    def mock_grade_repository(self):
+        return Mock()
+
+    @pytest.fixture
+    def use_case(self, mock_student_repository, mock_subject_repository, mock_grade_repository):
+        return UpdateStudentUseCase(
+            mock_student_repository,
+            mock_subject_repository,
+            mock_grade_repository
+        )
 
     @pytest.fixture
     def sample_student_data(self):
@@ -32,7 +46,7 @@ class TestUpdateStudentUseCase:
 
     # ========== Tests para execute ==========
 
-    def test_execute_success(self, use_case, mock_repository, sample_student_data):
+    def test_execute_success(self, use_case, mock_student_repository, sample_student_data):
         updated_student = Student(
             id="A25000001",
             name="Juan",
@@ -41,39 +55,39 @@ class TestUpdateStudentUseCase:
             semester=6,
             average=87.5,
         )
-        mock_repository.exists.return_value = True
-        mock_repository.update.return_value = updated_student
+
+        mock_student_repository.get_by_id.return_value = sample_student_data
+        mock_student_repository.update.return_value = updated_student
 
         result = use_case.execute(sample_student_data)
 
         assert result == updated_student
-        assert result.lastname == "Pérez García"
-        assert result.semester == 6
-        mock_repository.exists.assert_called_once_with(sample_student_data.id)
-        mock_repository.update.assert_called_once_with(sample_student_data)
 
-    def test_execute_student_not_found(self, use_case, mock_repository, sample_student_data):
-        mock_repository.exists.return_value = False
+        mock_student_repository.get_by_id.assert_called_once_with(sample_student_data.id)
+        mock_student_repository.update.assert_called_once_with(sample_student_data)
+
+    def test_execute_student_not_found(self, use_case, mock_student_repository, sample_student_data):
+        mock_student_repository.get_by_id.return_value = None
 
         with pytest.raises(ResourceNotFoundException) as exc_info:
             use_case.execute(sample_student_data)
 
         assert "Student cannot be found by id" in str(exc_info.value)
-        mock_repository.exists.assert_called_once_with(sample_student_data.id)
-        mock_repository.update.assert_not_called()
+        mock_student_repository.get_by_id.assert_called_once_with(sample_student_data.id)
+        mock_student_repository.update.assert_not_called()
 
-    def test_execute_update_fails(self, use_case, mock_repository, sample_student_data):
-        mock_repository.exists.return_value = True
-        mock_repository.update.return_value = None
+    def test_execute_update_fails(self, use_case, mock_student_repository, sample_student_data):
+        mock_student_repository.get_by_id.return_value = sample_student_data
+        mock_student_repository.update.return_value = None
 
         with pytest.raises(CannotUpdateResourceException) as exc_info:
             use_case.execute(sample_student_data)
 
         assert "Student cannot be updated" in str(exc_info.value)
-        mock_repository.exists.assert_called_once_with(sample_student_data.id)
-        mock_repository.update.assert_called_once_with(sample_student_data)
+        mock_student_repository.get_by_id.assert_called_once_with(sample_student_data.id)
+        mock_student_repository.update.assert_called_once_with(sample_student_data)
 
-    def test_execute_partial_update(self, use_case, mock_repository):
+    def test_execute_partial_update(self, use_case, mock_student_repository):
         partial_student = Student(
             id="A25000001",
             name="Juan",
@@ -90,11 +104,11 @@ class TestUpdateStudentUseCase:
             semester=5,
             average=85.0,
         )
-        mock_repository.exists.return_value = True
-        mock_repository.update.return_value = updated_student
+        mock_student_repository.get_by_id.return_value = partial_student
+        mock_student_repository.update.return_value = updated_student
 
         result = use_case.execute(partial_student)
 
         assert result.email == "nuevo.email@example.com"
         assert result.id == "S001"
-        mock_repository.update.assert_called_once_with(partial_student)
+        mock_student_repository.update.assert_called_once_with(partial_student)
