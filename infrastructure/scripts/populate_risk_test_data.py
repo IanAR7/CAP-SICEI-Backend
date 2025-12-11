@@ -11,30 +11,13 @@ project_root = os.path.dirname(os.path.dirname(current_dir))
 sys.path.append(project_root)
 
 try:
-    from infrastructure.db.database import DATABASE_URL
+    from infrastructure.db.database import DATABASE_URL, Base
 except ImportError:
     print("No se pudo importar DATABASE_URL. Asegúrate de configurar tus variables de entorno.")
     sys.exit(1)
 NUM_RECORDS = 50
-Base = declarative_base()
+from infrastructure.db.models import StudentRiskTestDataset
 
-class StudentRiskTestDataset(Base):
-    __tablename__ = 'Student_Risk_Test_Dataset'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    
-   
-    internet_home = Column(Integer, nullable=False)        
-    has_laptop = Column(Integer, nullable=False)           
-    is_female = Column(Integer, nullable=False)            
-    age = Column(Integer, nullable=False)
-    works = Column(Integer, nullable=False)                
-    num_people_home = Column(Integer, nullable=False)
-    prev_school_public = Column(Integer, nullable=False)   
-    finished_prev_school = Column(Integer, nullable=False) 
-    repeated_subjects = Column(Integer, nullable=False)    
-    work_hours = Column(Float, nullable=False)
-           
 def run():
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
