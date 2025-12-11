@@ -1,18 +1,14 @@
 from domain.entities.professor import Professor
-from infrastructure.schemas.professor_schema import CreateProfessorDTO, UpdateProfessorDTO
 from infrastructure.db.models import ProfessorModel
+from infrastructure.schemas.professor_schema import CreateProfessorDTO, UpdateProfessorDTO
+
 
 def map_create_professor_dto_to_entity(professor_dto: CreateProfessorDTO) -> Professor:
     """
     Maps a CreateProfessorDTO to a Professor entity.
     """
-    return Professor(
-        id=None,
-        first_name=professor_dto.first_name,
-        last_name=professor_dto.last_name,
-        email=professor_dto.email,
-        phone=professor_dto.phone
-    )
+    return Professor(id=None, first_name=professor_dto.first_name, last_name=professor_dto.last_name, email=professor_dto.email, phone=professor_dto.phone)
+
 
 def map_professor_entity_to_model(professor: Professor) -> ProfessorModel:
     """
@@ -26,6 +22,7 @@ def map_professor_entity_to_model(professor: Professor) -> ProfessorModel:
         phone=professor.phone,
     )
 
+
 def map_professor_model_to_entity(professor_model: ProfessorModel) -> Professor:
     """
     Maps a ProfessorModel (Database) to a Professor entity.
@@ -37,6 +34,7 @@ def map_professor_model_to_entity(professor_model: ProfessorModel) -> Professor:
         email=professor_model.email,
         phone=professor_model.phone,
     )
+
 
 def map_update_professor_dto_to_entity(professor_id: str, professor_dto: UpdateProfessorDTO) -> Professor:
     """

@@ -1,6 +1,7 @@
-from domain.repositories.professor_repository import ProfessorRepository
-from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
 from domain.exceptions.cannot_delete_resource_exception import CannotDeleteResourceException
+from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
+from domain.repositories.professor_repository import ProfessorRepository
+
 
 class DeleteProfessorUseCase:
     def __init__(self, repository: ProfessorRepository):

@@ -1,15 +1,14 @@
-from sqlalchemy.orm import Session
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
 
-from domain.entities.alert import Alert, AlertType, AlertStatus
+from sqlalchemy.orm import Session
+
+from domain.entities.alert import Alert, AlertStatus, AlertType
 from domain.repositories.alert_repository import AlertRepository
-from infrastructure.db.models import AlertModel, AlertTypeEnum, AlertStatusEnum, NotificationChannelEnum
-from infrastructure.mappers.alert_mappers import (
-    map_alert_entity_to_model,
-    map_alert_model_to_entity
-)
+from infrastructure.db.models import AlertModel, AlertStatusEnum, AlertTypeEnum, NotificationChannelEnum
+from infrastructure.mappers.alert_mappers import map_alert_entity_to_model, map_alert_model_to_entity
 from infrastructure.utils.sort_fields import ALLOWED_ALERT_SORT_FIELDS, ALLOWED_SORT_ORDERS
+
 
 class AlertRepositoryImpl(AlertRepository):
     """
@@ -41,15 +40,7 @@ class AlertRepositoryImpl(AlertRepository):
 
         return map_alert_model_to_entity(alert_model)
 
-    def get_all(
-        self,
-        page_size: int,
-        page: int,
-        alert_type: Optional[AlertType] = None,
-        status: Optional[AlertStatus] = None,
-        sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None
-    ) -> List[Alert]:
+    def get_all(self, page_size: int, page: int, alert_type: Optional[AlertType] = None, status: Optional[AlertStatus] = None, sort_field: Optional[str] = None, sort_order: Optional[str] = None) -> List[Alert]:
         """
         Obtiene todas las alertas con paginación y filtros.
         """
@@ -135,13 +126,6 @@ class AlertRepositoryImpl(AlertRepository):
         """
         current_time = datetime.now()
 
-        alert_models = (
-            self.db.query(AlertModel)
-            .filter(
-                AlertModel.status == AlertStatusEnum.scheduled,
-                AlertModel.scheduled_at <= current_time
-            )
-            .all()
-        )
+        alert_models = self.db.query(AlertModel).filter(AlertModel.status == AlertStatusEnum.scheduled, AlertModel.scheduled_at <= current_time).all()
 
         return [map_alert_model_to_entity(alert_model) for alert_model in alert_models]

@@ -1,0 +1,86 @@
+[tool.ruff]
+
+# Exclude common folders that do not need review
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+line-length = 320
+indent-width = 4
+
+# Target Python version
+target-version = "py312"
+
+[tool.ruff.lint]
+
+# Rules to enable:
+select = [
+    "E", # E: Pycodestyle errors (style issues)
+    "F", # F: Pyflakes (logic errors, unused variables)
+    "I", # I: isort – import ordering checks
+    "B"  # B: Flake8-bugbear – common bug patterns
+]
+
+# Rules to ignore
+ignore = [
+    "E501",  # E501: Line too long (handled by formatter)
+    "B008"  # B008: Do not perform function calls in argument defaults
+]
+
+# Allow autofix for all enabled rules (when using --fix)
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+
+# Use double quotes for strings (Black standard)
+quote-style = "double"
+
+# Indent with spaces
+indent-style = "space"
+
+# Respect trailing commas
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.12"
+strict = false
+
+ignore_missing_imports = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+explicit_package_bases = true
+no_implicit_optional = false
+namespace_packages = true
+plugins = ["pydantic.mypy", "sqlalchemy.ext.mypy.plugin"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false

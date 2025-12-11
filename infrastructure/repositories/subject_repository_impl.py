@@ -1,13 +1,19 @@
-from sqlalchemy.orm import Session
-
 from typing import List, Optional
+
+from sqlalchemy.orm import Session
 
 from domain.entities.subject import Subject
 from domain.repositories.subject_repository import SubjectRepository
-
 from infrastructure.db.models import SubjectModel
-from infrastructure.utils.sort_fields import ALLOWED_SUBJECT_SORT_FIELDS, ALLOWED_SORT_ORDERS
-from infrastructure.mappers.subject_mappers import map_subject_entity_to_model, map_subject_model_to_entity
+from infrastructure.mappers.subject_mappers import (
+    map_subject_entity_to_model,
+    map_subject_model_to_entity,
+)
+from infrastructure.utils.sort_fields import (
+    ALLOWED_SORT_ORDERS,
+    ALLOWED_SUBJECT_SORT_FIELDS,
+)
+
 
 class SubjectRepositoryImpl(SubjectRepository):
     def __init__(self, db: Session):
@@ -19,14 +25,7 @@ class SubjectRepositoryImpl(SubjectRepository):
         self.db.commit()
         self.db.refresh(subject_model)
 
-        return Subject(
-            id=subject_model.id,
-            name=subject_model.name,
-            description=subject_model.description,
-            credits=subject_model.credits,
-            semester=subject_model.semester,
-            professor_id=subject_model.professor_id
-        )
+        return Subject(id=subject_model.id, name=subject_model.name, description=subject_model.description, credits=subject_model.credits, semester=subject_model.semester, professor_id=subject_model.professor_id)
 
     def get_by_id(self, subject_id: str) -> Subject | None:
         subject_model = self.db.query(SubjectModel).filter(SubjectModel.id == subject_id).first()
@@ -45,7 +44,7 @@ class SubjectRepositoryImpl(SubjectRepository):
         page_size: int,
         page: int,
         sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None
+        sort_order: Optional[str] = None,
     ) -> List[Subject]:
         query = self.db.query(SubjectModel)
 
@@ -80,14 +79,7 @@ class SubjectRepositoryImpl(SubjectRepository):
         self.db.commit()
         self.db.refresh(subject_model)
 
-        return Subject(
-            id=subject_model.id,
-            name=subject_model.name,
-            description=subject_model.description,
-            credits=subject_model.credits,
-            semester=subject_model.semester,
-            professor_id=subject_model.professor_id
-        )
+        return Subject(id=subject_model.id, name=subject_model.name, description=subject_model.description, credits=subject_model.credits, semester=subject_model.semester, professor_id=subject_model.professor_id)
 
     def delete(self, subject_id: str) -> bool:
         subject_model = self.db.query(SubjectModel).filter(SubjectModel.id == subject_id).first()

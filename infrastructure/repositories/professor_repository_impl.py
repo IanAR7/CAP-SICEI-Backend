@@ -1,14 +1,11 @@
-from sqlalchemy.orm import Session
 from typing import List, Optional
+
+from sqlalchemy.orm import Session
 
 from domain.entities.professor import Professor
 from domain.repositories.professor_repository import ProfessorRepository
 from infrastructure.db.models import ProfessorModel
-from infrastructure.mappers.professor_mappers import (
-    map_professor_entity_to_model,
-    map_professor_model_to_entity
-)
-
+from infrastructure.mappers.professor_mappers import map_professor_entity_to_model, map_professor_model_to_entity
 from infrastructure.utils.sort_fields import ALLOWED_PROFESSOR_SORT_FIELDS, ALLOWED_SORT_ORDERS
 
 
@@ -24,18 +21,10 @@ class ProfessorRepositoryImpl(ProfessorRepository):
         return map_professor_model_to_entity(model)
 
     def get_by_id(self, professor_id: str) -> Optional[Professor]:
-        model = self.db.query(ProfessorModel).filter(
-            ProfessorModel.id == professor_id
-        ).first()
+        model = self.db.query(ProfessorModel).filter(ProfessorModel.id == professor_id).first()
         return map_professor_model_to_entity(model) if model else None
 
-    def get_all(
-        self,
-        page_size: int,
-        page: int,
-        sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None
-    ) -> List[Professor]:
+    def get_all(self, page_size: int, page: int, sort_field: Optional[str] = None, sort_order: Optional[str] = None) -> List[Professor]:
         query = self.db.query(ProfessorModel)
 
         if sort_field in ALLOWED_PROFESSOR_SORT_FIELDS:
@@ -50,9 +39,7 @@ class ProfessorRepositoryImpl(ProfessorRepository):
         return [map_professor_model_to_entity(professor_model) for professor_model in professors_model]
 
     def exists(self, professor_id: str) -> bool:
-        return self.db.query(
-            self.db.query(ProfessorModel).filter(ProfessorModel.id == professor_id).exists()
-        ).scalar()
+        return self.db.query(self.db.query(ProfessorModel).filter(ProfessorModel.id == professor_id).exists()).scalar()
 
     def update(self, professor: Professor) -> Optional[Professor]:
         professor_model = self.db.query(ProfessorModel).filter(ProfessorModel.id == professor.id).first()

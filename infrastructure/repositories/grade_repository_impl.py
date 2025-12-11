@@ -1,13 +1,21 @@
-from sqlalchemy.orm import Session
+from typing import List, Optional
 
-from typing import List, Optional, Tuple
+from sqlalchemy.orm import Session
 
 from domain.entities.grade import Grade, GradeToShowStudent, GradeToShowSubject
 from domain.repositories.grade_repository import GradeRepository
-
 from infrastructure.db.models import GradeModel
-from infrastructure.utils.sort_fields import ALLOWED_GRADES_SORT_FIELDS, ALLOWED_SORT_ORDERS
-from infrastructure.mappers.grade_mappers import map_grade_entity_to_model, map_grade_model_to_entity, map_grade_model_to_grade_to_show_student_dto, map_grade_model_to_grade_to_show_subject_dto
+from infrastructure.mappers.grade_mappers import (
+    map_grade_entity_to_model,
+    map_grade_model_to_entity,
+    map_grade_model_to_grade_to_show_student_dto,
+    map_grade_model_to_grade_to_show_subject_dto,
+)
+from infrastructure.utils.sort_fields import (
+    ALLOWED_GRADES_SORT_FIELDS,
+    ALLOWED_SORT_ORDERS,
+)
+
 
 class GradeRepositoryImpl(GradeRepository):
     def __init__(self, db: Session):
@@ -23,7 +31,7 @@ class GradeRepositoryImpl(GradeRepository):
             id=grade_model.id,
             student_id=grade_model.student_id,
             subject_id=grade_model.subject_id,
-            value=grade_model.value
+            value=grade_model.value,
         )
 
     def get_by_id(self, grade_id: int) -> Grade | None:
@@ -39,7 +47,7 @@ class GradeRepositoryImpl(GradeRepository):
         page_size: int,
         page: int,
         sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None
+        sort_order: Optional[str] = None,
     ) -> List[Grade]:
         query = self.db.query(GradeModel)
 
@@ -70,7 +78,7 @@ class GradeRepositoryImpl(GradeRepository):
             id=grade_model.id,
             student_id=grade_model.student_id,
             subject_id=grade_model.subject_id,
-            value=grade_model.value
+            value=grade_model.value,
         )
 
     def delete(self, grade_id: int) -> bool:
@@ -105,10 +113,7 @@ class GradeRepositoryImpl(GradeRepository):
         return [map_grade_model_to_entity(grade_model) for grade_model in grade_models]
 
     def get_student_grades_to_show(self, student_id: str) -> List[GradeToShowStudent] | None:
-        grade_models = (
-            self.db.query(GradeModel)
-            .filter(GradeModel.student_id == student_id)
-            .all())
+        grade_models = self.db.query(GradeModel).filter(GradeModel.student_id == student_id).all()
 
         if not grade_models:
             return None
@@ -116,10 +121,7 @@ class GradeRepositoryImpl(GradeRepository):
         return [map_grade_model_to_grade_to_show_student_dto(grade) for grade in grade_models]
 
     def get_subject_grades_to_show(self, subject_id: str) -> List[GradeToShowSubject] | None:
-        grade_models = (
-            self.db.query(GradeModel)
-            .filter(GradeModel.subject_id == subject_id)
-            .all())
+        grade_models = self.db.query(GradeModel).filter(GradeModel.subject_id == subject_id).all()
 
         if not grade_models:
             return None
@@ -139,7 +141,7 @@ class GradeRepositoryImpl(GradeRepository):
         return True
 
     def delete_by_student_id(self, student_id: str) -> bool:
-        """"
+        """ "
         Removes all grades associated with a student.
         Useful when a student changes semesters.
         """
@@ -166,11 +168,6 @@ class GradeRepositoryImpl(GradeRepository):
         """
         Prevents duplicates when reassigning subjects.
         """
-        grade_model = (
-            self.db.query(GradeModel)
-            .filter(
-                GradeModel.student_id == student_id,
-                GradeModel.subject_id == subject_id)
-            .first())
+        grade_model = self.db.query(GradeModel).filter(GradeModel.student_id == student_id, GradeModel.subject_id == subject_id).first()
 
         return grade_model is not None

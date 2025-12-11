@@ -1,9 +1,12 @@
-from domain.repositories.grade_repository import GradeRepository
 from domain.entities.grade import Grade
-from domain.exceptions.cannot_update_resource_exception import CannotUpdateResourceException
+from domain.exceptions.cannot_update_resource_exception import (
+    CannotUpdateResourceException,
+)
 from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
+from domain.repositories.grade_repository import GradeRepository
 from domain.repositories.student_repository import StudentRepository
 from domain.services.grade_service import GradeService
+
 
 class UpdateGradeUseCase:
     def __init__(

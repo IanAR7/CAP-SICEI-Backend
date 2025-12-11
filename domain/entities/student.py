@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Student:
     id: str | None
@@ -8,6 +9,7 @@ class Student:
     email: str
     semester: int
     average: float = 0.0
+
 
 @dataclass
 class StudentReportDashboard:

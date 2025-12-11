@@ -1,7 +1,9 @@
 from typing import List, Optional
-from domain.repositories.professor_repository import ProfessorRepository
-from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
+
 from domain.entities.professor import Professor
+from domain.exceptions.resource_not_found_exception import ResourceNotFoundException
+from domain.repositories.professor_repository import ProfessorRepository
+
 
 class GetProfessorUseCase:
     def __init__(self, professor_repository: ProfessorRepository):
@@ -23,18 +25,7 @@ class GetProfessorUseCase:
 
         return professors_obtained
 
-    def execute_all(
-        self,
-        page_size: int,
-        page: int,
-        sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None
-    ) -> list[Professor]:
-        professors_obtained = self.repository.get_all(
-            page_size=page_size,
-            page=page,
-            sort_field=sort_field,
-            sort_order=sort_order
-        )
+    def execute_all(self, page_size: int, page: int, sort_field: Optional[str] = None, sort_order: Optional[str] = None) -> list[Professor]:
+        professors_obtained = self.repository.get_all(page_size=page_size, page=page, sort_field=sort_field, sort_order=sort_order)
 
         return professors_obtained

@@ -1,8 +1,9 @@
 import random
 
 from domain.entities.professor import Professor
-from domain.repositories.professor_repository import ProfessorRepository
 from domain.exceptions.cannot_create_exception import CannotCreateException
+from domain.repositories.professor_repository import ProfessorRepository
+
 
 class CreateProfessorUseCase:
     def __init__(self, repository: ProfessorRepository):
