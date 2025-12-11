@@ -1,10 +1,11 @@
-from domain.repositories.attendance_repository import AttendanceRepository
 from domain.exceptions.cannot_delete_resource_exception import CannotDeleteResourceException
+from domain.repositories.attendance_repository import AttendanceRepository
+
 
 class DeleteAttendanceUseCase:
     def __init__(self, repository: AttendanceRepository):
         self.repository = repository
-    
+
     def execute(self, attendance_id: str) -> bool:
         deleted = self.repository.delete(attendance_id)
         if not deleted:
